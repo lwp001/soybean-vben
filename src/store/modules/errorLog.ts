@@ -1,12 +1,13 @@
+import type { ErrorLogInfo } from '/#/store';
+
 import { defineStore } from 'pinia';
-import type { ErrorLogInfo } from '@/interface';
+import { store } from '/@/store';
 
-import { store } from '@/store';
+import { formatToDateTime } from '/@/utils/dateUtil';
+import projectSetting from '/@/settings/projectSetting';
 
-import { formatToDateTime } from '@/utils/dateUtil';
-import projectSetting from '@/settings/system';
-
-import { ErrorTypeEnum } from '@/enum';
+import { ErrorTypeEnum } from '/@/enums/exceptionEnum';
+import dayjs from 'dayjs';
 
 export interface ErrorLogState {
   errorLogInfoList: Nullable<ErrorLogInfo[]>;
@@ -31,7 +32,7 @@ export const useErrorLogStore = defineStore({
     addErrorLogInfo(info: ErrorLogInfo) {
       const item = {
         ...info,
-        time: formatToDateTime(new Date())
+        time: formatToDateTime(dayjs())
       };
       this.errorLogInfoList = [item, ...(this.errorLogInfoList || [])];
       this.errorLogListCount += 1;

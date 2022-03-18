@@ -1,12 +1,11 @@
-import type { AppRouteModule } from '@/router/types';
+import type { AppRouteModule } from '/@/router/types';
 
-// import { LAYOUT } from '@/router/constant';
-import { BasicLayout } from '@/layouts';
+import { LAYOUT } from '/@/router/constant';
 
 const dashboard: AppRouteModule = {
   path: '/dashboard',
   name: 'Dashboard',
-  component: BasicLayout,
+  component: LAYOUT,
   redirect: '/dashboard/analysis',
   meta: {
     orderNo: 10,
@@ -17,16 +16,16 @@ const dashboard: AppRouteModule = {
     {
       path: 'analysis',
       name: 'Analysis',
-      component: () => import('@/views/dashboard/analysis/index.vue'),
+      component: () => import('/@/views/dashboard/analysis/index.vue'),
       meta: {
-        affix: true,
+        // affix: true,
         title: '分析页'
       }
     },
     {
       path: 'workbench',
       name: 'Workbench',
-      component: () => import('@/views/dashboard/workbench/index.vue'),
+      component: () => import('/@/views/dashboard/workbench/index.vue'),
       meta: {
         title: '工作台'
       }

@@ -1,92 +1,110 @@
-import type { ThemeSettings } from '@/interface';
-import { EnumAnimate, EnumMultiTabMode, EnumHorizontalMenuPosition } from '@/enum';
-import customThemeSettings from './theme.json';
+import {
+  EnumThemeLayoutMode,
+  EnumThemeTabMode,
+  EnumThemeHorizontalMenuPosition,
+  EnumThemeAnimateMode
+} from '/@/enums/theme';
+import type { ThemeSetting } from '/@/typings';
+import jsonSetting from './theme.json';
 
 const themeColorList = [
+  '#1890ff',
   '#409EFF',
   '#2d8cf0',
-  '#0960bd',
-  '#009688',
+  '#007AFF',
+  '#5ac8fa',
+  '#5856D6',
   '#536dfe',
-  '#ff5c93',
-  '#ee4f12',
-  '#0096c7',
   '#9c27b0',
-  '#ff9800',
-  '#FF3D68',
+  '#AF52DE',
+  '#0096c7',
   '#00C1D4',
-  '#71EFA3',
-  '#171010',
+  '#34C759',
+  '#43a047',
+  '#7cb342',
+  '#c0ca33',
   '#78DEC7',
-  '#1768AC',
-  '#FB9300',
-  '#FC5404'
+  '#e53935',
+  '#d81b60',
+  '#f4511e',
+  '#fb8c00',
+  '#ffb300',
+  '#fdd835',
+  '#6d4c41',
+  '#546e7a'
 ];
 
-const defaultThemeSettings: ThemeSettings = {
+const defaultThemeSetting: ThemeSetting = {
   darkMode: false,
+  layout: {
+    minWidth: 900,
+    mode: 'vertical',
+    modeList: [
+      { value: 'vertical', label: EnumThemeLayoutMode.vertical },
+      { value: 'vertical-mix', label: EnumThemeLayoutMode['vertical-mix'] },
+      { value: 'horizontal', label: EnumThemeLayoutMode.horizontal },
+      { value: 'horizontal-mix', label: EnumThemeLayoutMode['horizontal-mix'] }
+    ]
+  },
   themeColor: themeColorList[0],
   themeColorList,
   otherColor: {
     info: '#2080f0',
-    success: '#67C23A',
-    warning: '#E6A23C',
-    error: '#F56C6C'
+    success: '#52c41a',
+    warning: '#faad14',
+    error: '#f5222d'
   },
-  navStyle: {
-    mode: 'vertical',
-    theme: 'light'
+  isCustomizeInfoColor: false,
+  fixedHeaderAndTab: true,
+  showReload: true,
+  header: {
+    height: 56,
+    crumb: {
+      visible: true,
+      showIcon: true
+    }
   },
-  menuStyle: {
-    width: 200,
+  tab: {
+    visible: true,
+    height: 44,
+    mode: 'chrome',
+    modeList: [
+      { value: 'chrome', label: EnumThemeTabMode.chrome },
+      { value: 'button', label: EnumThemeTabMode.button }
+    ],
+    isCache: true
+  },
+  sider: {
+    width: 220,
     collapsedWidth: 64,
     mixWidth: 80,
     mixCollapsedWidth: 48,
+    mixChildMenuWidth: 200
+  },
+  menu: {
     horizontalPosition: 'flex-start',
     horizontalPositionList: [
-      { value: 'flex-start', label: EnumHorizontalMenuPosition['flex-start'] },
-      { value: 'center', label: EnumHorizontalMenuPosition.center },
-      { value: 'flex-end', label: EnumHorizontalMenuPosition['flex-end'] }
+      { value: 'flex-start', label: EnumThemeHorizontalMenuPosition['flex-start'] },
+      { value: 'center', label: EnumThemeHorizontalMenuPosition.center },
+      { value: 'flex-end', label: EnumThemeHorizontalMenuPosition['flex-end'] }
     ]
   },
-  headerStyle: {
-    height: 56,
-    bgColor: '#fff'
-  },
-  multiTabStyle: {
-    height: 44,
-    visible: true,
-    bgColor: '#fff',
-    mode: 'chrome',
-    isCache: true,
-    modeList: [
-      { value: 'button', label: EnumMultiTabMode.button },
-      { value: 'chrome', label: EnumMultiTabMode.chrome }
-    ]
-  },
-  crumbsStyle: {
-    visible: true,
-    showIcon: true
-  },
-  footerStyle: {
+  footer: {
+    fixed: false,
     height: 48
   },
-  pageStyle: {
+  page: {
     animate: true,
-    animateType: 'fade-slide',
-    animateTypeList: [
-      { value: 'zoom-fade', label: EnumAnimate['zoom-fade'] },
-      { value: 'zoom-out', label: EnumAnimate['zoom-out'] },
-      { value: 'fade-slide', label: EnumAnimate['fade-slide'] },
-      { value: 'fade', label: EnumAnimate.fade },
-      { value: 'fade-bottom', label: EnumAnimate['fade-bottom'] },
-      { value: 'fade-scale', label: EnumAnimate['fade-scale'] }
+    animateMode: 'fade-slide',
+    animateModeList: [
+      { value: 'fade-slide', label: EnumThemeAnimateMode['fade-slide'] },
+      { value: 'fade', label: EnumThemeAnimateMode.fade },
+      { value: 'fade-bottom', label: EnumThemeAnimateMode['fade-bottom'] },
+      { value: 'fade-scale', label: EnumThemeAnimateMode['fade-scale'] },
+      { value: 'zoom-fade', label: EnumThemeAnimateMode['zoom-fade'] },
+      { value: 'zoom-out', label: EnumThemeAnimateMode['zoom-out'] }
     ]
-  },
-  fixedHeaderAndTab: true,
-  showReload: true
+  }
 };
 
-export const themeSettings = (customThemeSettings as ThemeSettings) || defaultThemeSettings;
-
-export { defaultThemeSettings };
+export const themeSetting = (jsonSetting as ThemeSetting) || defaultThemeSetting;

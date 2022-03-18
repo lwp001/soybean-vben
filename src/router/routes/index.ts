@@ -1,9 +1,9 @@
-import type { AppRouteRecordRaw, AppRouteModule } from '@/router/types';
+import type { AppRouteRecordRaw, AppRouteModule } from '/@/router/types';
 
-import { PAGE_NOT_FOUND_ROUTE, REDIRECT_ROUTE } from '@/router/routes/basic';
+import { PAGE_NOT_FOUND_ROUTE, REDIRECT_ROUTE } from '/@/router/routes/basic';
 
 import { mainOutRoutes } from './mainOut';
-import { PageEnum } from '@/enum';
+import { PageEnum } from '/@/enums/pageEnum';
 
 const modules = import.meta.globEager('./modules/**/*.ts');
 
@@ -19,9 +19,8 @@ export const asyncRoutes = [PAGE_NOT_FOUND_ROUTE, ...routeModuleList];
 
 export const RootRoute: AppRouteRecordRaw = {
   path: '/',
-  name: 'root',
+  name: 'Root',
   redirect: PageEnum.BASE_HOME,
-  component: '', // 因提示错误添加 不知是否有问题
   meta: {
     title: 'Root'
   }
@@ -29,8 +28,8 @@ export const RootRoute: AppRouteRecordRaw = {
 
 export const LoginRoute: AppRouteRecordRaw = {
   path: '/login',
-  name: 'login',
-  component: () => import('@/views/system/login/index.vue'),
+  name: 'Login',
+  component: () => import('/@/views/login/Login.vue'),
   meta: {
     title: '登录'
   }

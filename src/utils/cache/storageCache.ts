@@ -1,7 +1,7 @@
-import { cacheCipher } from '@/settings/encryptionSetting';
-import type { EncryptionParams } from '@/utils/cipher';
-import { AesEncryption } from '@/utils/cipher';
-import { isNullOrUnDef } from '@/utils/is';
+import { cacheCipher } from '/@/settings/encryptionSetting';
+import type { EncryptionParams } from '/@/utils/cipher';
+import { AesEncryption } from '/@/utils/cipher';
+import { isNullOrUnDef } from '/@/utils/is';
 
 export interface CreateStorageParams extends EncryptionParams {
   prefixKey: string;
@@ -31,13 +31,9 @@ export const createStorage = ({
    */
   const WebStorage = class WebStorage {
     private storage: Storage;
-
     private prefixKey?: string;
-
     private encryption: AesEncryption;
-
     private hasEncrypt: boolean;
-
     /**
      *
      * @param {*} storage
@@ -88,7 +84,6 @@ export const createStorage = ({
           return value;
         }
         this.remove(key);
-        return def;
       } catch (e) {
         return def;
       }

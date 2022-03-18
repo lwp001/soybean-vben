@@ -1,13 +1,4 @@
 <template>
-  <n-space :vertical="true" :size="16">
-    <top-chart />
-    <data-card />
-    <bottom-part />
-  </n-space>
+  <div class="p-4">分析页</div>
 </template>
-
-<script lang="ts" setup>
-import { NSpace } from 'naive-ui';
-import { TopChart, DataCard, BottomPart } from './components';
-</script>
-<style scoped></style>
+<script lang="ts" setup></script>

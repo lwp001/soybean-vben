@@ -1,4 +1,4 @@
-import { isObject, isString } from '@/utils/is';
+import { isObject, isString } from '/@/utils/is';
 
 const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
@@ -23,8 +23,7 @@ export function formatRequestDate(params: Recordable) {
     return;
   }
 
-  // for (const key in params)
-  Object.keys(params).forEach(key => {
+  for (const key in params) {
     const format = params[key]?.format ?? null;
     if (format && typeof format === 'function') {
       params[key] = params[key].format(DATE_TIME_FORMAT);
@@ -42,5 +41,5 @@ export function formatRequestDate(params: Recordable) {
     if (isObject(params[key])) {
       formatRequestDate(params[key]);
     }
-  });
+  }
 }

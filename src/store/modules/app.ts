@@ -1,96 +1,119 @@
-// import type { BeforeMiniState } from '/#/store';
+import type { ProjectConfig, HeaderSetting, MenuSetting, TransitionSetting, MultiTabsSetting } from '/#/config';
+import type { BeforeMiniState } from '/#/store';
+import { nextTick } from 'vue';
 import { defineStore } from 'pinia';
-import { store } from '@/store';
-import type { ProjectConfig, MultiTabsSetting, TransitionSetting } from '@/interface';
-import { PROJ_CFG_KEY } from '@/enum';
-import { Persistent } from '@/utils/cache/persistent';
-import { resetRouter } from '@/router';
-import { deepMerge } from '@/utils';
+import { store } from '/@/store';
 
-/** 菜单状态 */
-interface MenuState {
-  /** 菜单折叠 */
-  collapsed: boolean;
-  /** 混合菜单vertical-mix是否固定二级菜单 */
-  fixedMix: boolean;
-}
+import { PROJ_CFG_KEY } from '/@/enums/cacheEnum';
+import { Persistent } from '/@/utils/cache/persistent';
 
-/** 项目配置抽屉的状态 */
-interface SettingDrawer {
-  /** 设置抽屉可见性 */
-  visible: boolean;
-}
+import { resetRouter } from '/@/router';
+import { deepMerge } from '/@/utils';
 
 interface AppState {
-  menu: MenuState;
-  settingDrawer: SettingDrawer;
   // Page loading status
   pageLoading: boolean;
   // project config
   projectConfig: ProjectConfig | null;
+  // When the window shrinks, remember some states, and restore these states when the window is restored
+  beforeMiniInfo: BeforeMiniState;
+  /** 重载页面(控制页面的显示) */
+  reloadFlag: boolean;
+  /** 项目配置的抽屉可见状态 */
+  settingDrawerVisible: boolean;
+  /** 侧边栏折叠状态 */
+  siderCollapse: boolean;
+  /** vertical-mix模式下 侧边栏的固定状态 */
+  mixSiderFixed: boolean;
 }
 let timeId: TimeoutHandle;
 export const useAppStore = defineStore({
   id: 'app',
   state: (): AppState => ({
-    menu: {
-      collapsed: false,
-      fixedMix: false
-    },
-    settingDrawer: {
-      visible: false
-    },
     pageLoading: false,
-    projectConfig: Persistent.getLocal(PROJ_CFG_KEY)
+    projectConfig: Persistent.getLocal(PROJ_CFG_KEY),
+    beforeMiniInfo: {},
+    reloadFlag: true,
+    settingDrawerVisible: false,
+    siderCollapse: false,
+    mixSiderFixed: false
   }),
   getters: {
     getPageLoading(): boolean {
       return this.pageLoading;
     },
+
+    getBeforeMiniInfo(): BeforeMiniState {
+      return this.beforeMiniInfo;
+    },
+
     getProjectConfig(): ProjectConfig {
       return this.projectConfig || ({} as ProjectConfig);
     },
-    /** 获取设置面板的信息 */
-    getSettingDrawerSetting(): SettingDrawer {
-      return this.settingDrawer;
+
+    getHeaderSetting(): HeaderSetting {
+      return this.getProjectConfig.headerSetting;
     },
-    getMenusSetting(): MenuState {
-      return this.menu;
-    },
-    getMultiTabsSetting(): MultiTabsSetting {
-      return this.getProjectConfig.multiTabsSetting;
+    getMenuSetting(): MenuSetting {
+      return this.getProjectConfig.menuSetting;
     },
     getTransitionSetting(): TransitionSetting {
       return this.getProjectConfig.transitionSetting;
+    },
+    getMultiTabsSetting(): MultiTabsSetting {
+      return this.getProjectConfig.multiTabsSetting;
     }
   },
   actions: {
     setPageLoading(loading: boolean): void {
       this.pageLoading = loading;
     },
+
+    setBeforeMiniInfo(state: BeforeMiniState): void {
+      this.beforeMiniInfo = state;
+    },
+
     setProjectConfig(config: DeepPartial<ProjectConfig>): void {
       this.projectConfig = deepMerge(this.projectConfig || {}, config);
       Persistent.setLocal(PROJ_CFG_KEY, this.projectConfig);
     },
-    /** 折叠/展开菜单 */
-    handleMenuCollapse(collapsed: boolean) {
-      this.menu.collapsed = collapsed;
+    /** 折叠/展开 侧边栏折叠状态 */
+    toggleSiderCollapse() {
+      this.siderCollapse = !this.siderCollapse;
     },
-    /** 设置混合菜单是否固定 */
-    toggleFixedMixMenu() {
-      this.menu.fixedMix = !this.menu.fixedMix;
+    /** 设置 vertical-mix模式下 侧边栏的固定状态 */
+    toggleMixSiderFixed() {
+      this.mixSiderFixed = !this.mixSiderFixed;
     },
-    /** 切换折叠/展开菜单 */
-    toggleMenu() {
-      this.menu.collapsed = !this.menu.collapsed;
-    },
-    /** 打开配置抽屉 */
+    /** 打开设置抽屉 */
     openSettingDrawer() {
-      this.settingDrawer.visible = true;
+      this.settingDrawerVisible = true;
     },
-    /** 关闭配置抽屉 */
+    /** 关闭设置抽屉 */
     closeSettingDrawer() {
-      this.settingDrawer.visible = false;
+      this.settingDrawerVisible = false;
+    },
+    /** 切换抽屉可见状态 */
+    toggleSettingdrawerVisible() {
+      this.settingDrawerVisible = !this.settingDrawerVisible;
+    },
+    /**
+     * 重载页面
+     * @param duration - 重载的延迟时间(ms)
+     */
+    async reloadPage(duration = 0) {
+      this.reloadFlag = false;
+      await nextTick();
+      if (duration) {
+        setTimeout(() => {
+          this.reloadFlag = true;
+        }, duration);
+      } else {
+        this.reloadFlag = true;
+      }
+      setTimeout(() => {
+        document.documentElement.scrollTo({ left: 0, top: 0 });
+      }, 100);
     },
     async resetAllState() {
       resetRouter();

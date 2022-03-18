@@ -1,16 +1,15 @@
 import type { Router, RouteLocationNormalized } from 'vue-router';
-// import { Modal, notification } from 'ant-design-vue';
+import { useAppStoreWithOut } from '/@/store/modules/app';
+import { useUserStoreWithOut } from '/@/store/modules/user';
+import { useTransitionSetting } from '/@/hooks/setting/useTransitionSetting';
+import { AxiosCanceler } from '/@/utils/http/axios/axiosCancel';
+
 import { unref } from 'vue';
-import nProgress from 'nprogress';
-import { useAppStoreWithOut } from '@/store/modules/app';
-import { useUserStoreWithOut } from '@/store/modules/user';
-import { useTransitionSetting } from '@/hooks/setting/useTransitionSetting';
-import { AxiosCanceler } from '@/utils/http/axios/axiosCancel';
-// import { warn } from '@/utils/log';
-import { setRouteChange } from '@/logics/mitt/routeChange';
+import { setRouteChange } from '/@/logics/mitt/routeChange';
 import { createPermissionGuard } from './permissionGuard';
 import { createStateGuard } from './stateGuard';
-import projectSetting from '@/settings/system';
+import nProgress from 'nprogress';
+import projectSetting from '/@/settings/projectSetting';
 import { createParamMenuGuard } from './paramMenuGuard';
 
 // Don't change the order of creation
@@ -19,7 +18,7 @@ export function setupRouterGuard(router: Router) {
   createPageLoadingGuard(router);
   createHttpGuard(router);
   createScrollGuard(router);
-  // createMessageGuard(router);
+
   createProgressGuard(router);
   createPermissionGuard(router);
   createParamMenuGuard(router); // must after createPermissionGuard (menu has been built.)
@@ -34,8 +33,7 @@ function createPageGuard(router: Router) {
 
   router.beforeEach(async to => {
     // The page has already been loaded, it will be faster to open it again, you don’t need to do loading and other processing
-    // to.meta.loaded = !!loadedPageMap.get(to.path);
-    Object.assign(to.meta, { loaded: !!loadedPageMap.get(to.path) });
+    to.meta.loaded = !!loadedPageMap.get(to.path);
     // Notify routing changes
     setRouteChange(to);
 
@@ -102,7 +100,7 @@ function createScrollGuard(router: Router) {
     return /^#/.test(href);
   };
 
-  const { body } = document;
+  const body = document.body;
 
   router.afterEach(async to => {
     // scroll top
@@ -110,26 +108,6 @@ function createScrollGuard(router: Router) {
     return true;
   });
 }
-
-// /**
-//  * Used to close the message instance when the route is switched
-//  * @param router
-//  */
-// export function createMessageGuard(router: Router) {
-//   const { closeMessageOnSwitch } = projectSetting;
-
-//   router.beforeEach(async () => {
-//     try {
-//       if (closeMessageOnSwitch) {
-//         Modal.destroyAll();
-//         notification.destroy();
-//       }
-//     } catch (error) {
-//       warn(`message guard error:${error}`);
-//     }
-//     return true;
-//   });
-// }
 
 export function createProgressGuard(router: Router) {
   const { getOpenNProgress } = useTransitionSetting();

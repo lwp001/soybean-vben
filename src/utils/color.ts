@@ -1,3 +1,7 @@
+import { colord, extend } from 'colord';
+import mixPlugin from 'colord/plugins/mix';
+import type { HsvColor } from 'colord';
+
 /**
  * 判断是否 十六进制颜色值.
  * 输入形式可为 #fff000 #f00
@@ -5,8 +9,6 @@
  * @param   String  color   十六进制颜色值
  * @return  Boolean
  */
-import chroma from 'chroma-js';
-
 export function isHexColor(color: string) {
   const reg = /^#([0-9a-fA-F]{3}|[0-9a-fA-f]{6})$/;
   return reg.test(color);
@@ -24,7 +26,7 @@ export function isHexColor(color: string) {
 export function rgbToHex(r: number, g: number, b: number) {
   // tslint:disable-next-line:no-bitwise
   const hex = ((r << 16) | (g << 8) | b).toString(16);
-  return `#${new Array(Math.abs(hex.length - 7)).join('0')}${hex}`;
+  return '#' + new Array(Math.abs(hex.length - 7)).join('0') + hex;
 }
 
 /**
@@ -44,9 +46,9 @@ export function hexToRGB(hex: string) {
     }
     const sColorChange: number[] = [];
     for (let i = 1; i < 7; i += 2) {
-      sColorChange.push(parseInt(`0x${sHex.slice(i, i + 2)}`));
+      sColorChange.push(parseInt('0x' + sHex.slice(i, i + 2)));
     }
-    return `RGB(${sColorChange.join(',')})`;
+    return 'RGB(' + sColorChange.join(',') + ')';
   }
   return sHex;
 }
@@ -112,7 +114,7 @@ function addLight(color: string, amount: number) {
 function luminanace(r: number, g: number, b: number) {
   const a = [r, g, b].map(v => {
     v /= 255;
-    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
   });
   return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
 }
@@ -149,31 +151,129 @@ function subtractLight(color: string, amount: number) {
   return c.toString(16).length > 1 ? c.toString(16) : `0${c.toString(16)}`;
 }
 
+extend([mixPlugin]);
+
+type ColorIndex = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+
+const hueStep = 2;
+const saturationStep = 16;
+const saturationStep2 = 5;
+const brightnessStep1 = 5;
+const brightnessStep2 = 15;
+const lightColorCount = 5;
+const darkColorCount = 4;
+
 /**
- * 更亮的颜色
+ * 根据颜色获取调色板颜色(从左至右颜色从浅到深，6为主色号)
  * @param color - 颜色
- * @param deep - 效果层次
+ * @param index - 调色板的对应的色号(6为主色号)
+ * @description 算法实现从ant-design调色板算法中借鉴 https://github.com/ant-design/ant-design/blob/master/components/style/color/colorPalette.less
  */
-export function brightenColor(color: string, deep: number = 0.5) {
-  return chroma(color).brighten(deep).hex();
+export function getColorPalette(color: string, index: ColorIndex) {
+  if (index === 6) return color;
+
+  const isLight = index < 6;
+  const hsv = colord(color).toHsv();
+  const i = isLight ? lightColorCount + 1 - index : index - lightColorCount - 1;
+
+  const newHsv: HsvColor = {
+    h: getHue(hsv, i, isLight),
+    s: getSaturation(hsv, i, isLight),
+    v: getValue(hsv, i, isLight)
+  };
+
+  return colord(newHsv).toHex();
 }
 
 /**
- * 更暗的颜色
+ * 根据颜色获取调色板颜色所有颜色
  * @param color - 颜色
- * @param deep - 效果层次
  */
-export function darkenColor(color: string, deep: number = 0.5) {
-  return chroma(color).darken(deep).hex();
+export function getAllColorPalette(color: string) {
+  const indexs: ColorIndex[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  return indexs.map(index => getColorPalette(color, index));
+}
+
+/**
+ * 获取色相渐变
+ * @param hsv - hsv格式颜色值
+ * @param i - 与6的相对距离
+ * @param isLight - 是否是亮颜色
+ */
+function getHue(hsv: HsvColor, i: number, isLight: boolean) {
+  let hue: number;
+  if (hsv.h >= 60 && hsv.h <= 240) {
+    // 冷色调
+    // 减淡变亮 色相顺时针旋转 更暖
+    // 加深变暗 色相逆时针旋转 更冷
+    hue = isLight ? hsv.h - hueStep * i : hsv.h + hueStep * i;
+  } else {
+    // 暖色调
+    // 减淡变亮 色相逆时针旋转 更暖
+    // 加深变暗 色相顺时针旋转 更冷
+    hue = isLight ? hsv.h + hueStep * i : hsv.h - hueStep * i;
+  }
+  if (hue < 0) {
+    hue += 360;
+  } else if (hue >= 360) {
+    hue -= 360;
+  }
+  return hue;
+}
+
+/**
+ * 获取饱和度渐变
+ * @param hsv - hsv格式颜色值
+ * @param i - 与6的相对距离
+ * @param isLight - 是否是亮颜色
+ */
+function getSaturation(hsv: HsvColor, i: number, isLight: boolean) {
+  let saturation: number;
+  if (isLight) {
+    saturation = hsv.s - saturationStep * i;
+  } else if (i === darkColorCount) {
+    saturation = hsv.s + saturationStep;
+  } else {
+    saturation = hsv.s + saturationStep2 * i;
+  }
+  if (saturation > 100) {
+    saturation = 100;
+  }
+  if (isLight && i === lightColorCount && saturation > 10) {
+    saturation = 10;
+  }
+  if (saturation < 6) {
+    saturation = 6;
+  }
+  return saturation;
+}
+
+/**
+ * 获取明度渐变
+ * @param hsv - hsv格式颜色值
+ * @param i - 与6的相对距离
+ * @param isLight - 是否是亮颜色
+ */
+function getValue(hsv: HsvColor, i: number, isLight: boolean) {
+  let value: number;
+  if (isLight) {
+    value = hsv.v + brightnessStep1 * i;
+  } else {
+    value = hsv.v - brightnessStep2 * i;
+  }
+  if (value > 100) {
+    value = 100;
+  }
+  return value;
 }
 
 /**
  * 给颜色加透明度
  * @param color - 颜色
- * @param alpha - 透明度
+ * @param alpha - 透明度(0 - 1)
  */
 export function addColorAlpha(color: string, alpha: number) {
-  return chroma(color).alpha(alpha).hex();
+  return colord(color).alpha(alpha).toHex();
 }
 
 /**
@@ -183,5 +283,13 @@ export function addColorAlpha(color: string, alpha: number) {
  * @param ratio - 第二个颜色占比
  */
 export function mixColor(firstColor: string, secondColor: string, ratio: number) {
-  return chroma.mix(firstColor, secondColor, ratio).hex();
+  return colord(firstColor).mix(secondColor, ratio).toHex();
+}
+
+/**
+ * 是否是白颜色
+ * @param color - 颜色
+ */
+export function isWhiteColor(color: string) {
+  return colord(color).isEqual('#ffffff');
 }

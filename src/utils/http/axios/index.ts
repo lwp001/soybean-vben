@@ -3,21 +3,23 @@
 
 import type { AxiosResponse } from 'axios';
 import { clone } from 'lodash-es';
-import type { RequestOptions, Result } from '@/interface';
+import type { RequestOptions, Result } from '/#/axios';
 import type { AxiosTransform, CreateAxiosOptions } from './axiosTransform';
 import { VAxios } from './Axios';
 import { checkStatus } from './checkStatus';
-import { useGlobSetting } from '@/hooks/setting';
-import { RequestEnum, ResultEnum, ContentTypeEnum } from '@/enum/common/httpEnum';
-import { isString } from '@/utils/is';
-import { getToken } from '@/utils/auth';
-import { setObjToUrlParams, deepMerge } from '@/utils';
-import { useErrorLogStoreWithOut } from '@/store/modules/errorLog';
+import { useGlobSetting } from '/@/hooks/setting';
+
+import { RequestEnum, ResultEnum, ContentTypeEnum } from '/@/enums/httpEnum';
+import { isString } from '/@/utils/is';
+import { getToken } from '/@/utils/auth';
+import { setObjToUrlParams, deepMerge } from '/@/utils';
+import { useErrorLogStoreWithOut } from '/@/store/modules/errorLog';
+
 import { joinTimestamp, formatRequestDate } from './helper';
-import { useUserStoreWithOut } from '@/store/modules/user';
+import { useUserStoreWithOut } from '/@/store/modules/user';
 
 const globSetting = useGlobSetting();
-const { urlPrefix } = globSetting;
+const urlPrefix = globSetting.urlPrefix;
 const { $message: createMessage, $dialog: createErrorModal } = window;
 
 /**
@@ -58,13 +60,12 @@ const transform: AxiosTransform = {
     // 如果不希望中断当前请求，请return数据，否则直接抛出异常即可
     let timeoutMsg = '';
     switch (code) {
-      case ResultEnum.TIMEOUT: {
+      case ResultEnum.TIMEOUT:
         timeoutMsg = '登录超时,请重新登录!';
         const userStore = useUserStoreWithOut();
         userStore.setToken(undefined);
         userStore.logout(true);
         break;
-      }
       default:
         if (message) {
           timeoutMsg = message;
@@ -78,7 +79,7 @@ const transform: AxiosTransform = {
     } else if (options.errorMessageMode === 'message') {
       createMessage?.error(timeoutMsg);
     }
-
+    console.log('http response error:', timeoutMsg);
     throw new Error(timeoutMsg || '请求出错，请稍候重试');
   },
 
@@ -102,26 +103,28 @@ const transform: AxiosTransform = {
         config.params = Object.assign(params || {}, joinTimestamp(joinTime, false));
       } else {
         // 兼容restful风格
-        config.url = `${config.url + params}${joinTimestamp(joinTime, true)}`;
+        config.url = config.url + params + `${joinTimestamp(joinTime, true)}`;
         config.params = undefined;
-      }
-    } else if (!isString(params)) {
-      formatDate && formatRequestDate(params);
-      if (Reflect.has(config, 'data') && config.data && Object.keys(config.data).length > 0) {
-        config.data = data;
-        config.params = params;
-      } else {
-        // 非GET请求如果没有提供data，则将params视为data
-        config.data = params;
-        config.params = undefined;
-      }
-      if (joinParamsToUrl) {
-        config.url = setObjToUrlParams(config.url as string, { ...config.params, ...config.data });
       }
     } else {
-      // 兼容restful风格
-      config.url += params;
-      config.params = undefined;
+      if (!isString(params)) {
+        formatDate && formatRequestDate(params);
+        if (Reflect.has(config, 'data') && config.data && Object.keys(config.data).length > 0) {
+          config.data = data;
+          config.params = params;
+        } else {
+          // 非GET请求如果没有提供data，则将params视为data
+          config.data = params;
+          config.params = undefined;
+        }
+        if (joinParamsToUrl) {
+          config.url = setObjToUrlParams(config.url as string, Object.assign({}, config.params, config.data));
+        }
+      } else {
+        // 兼容restful风格
+        config.url = config.url + params;
+        config.params = undefined;
+      }
     }
     return config;
   },
@@ -174,6 +177,7 @@ const transform: AxiosTransform = {
         } else if (errorMessageMode === 'message') {
           createMessage?.error(errMessage);
         }
+
         return Promise.reject(error);
       }
     } catch (error) {
@@ -219,7 +223,7 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
           // 接口地址
           apiUrl: globSetting.apiUrl,
           // 接口拼接地址
-          urlPrefix,
+          urlPrefix: urlPrefix,
           //  是否加入时间戳
           joinTime: true,
           // 忽略重复请求

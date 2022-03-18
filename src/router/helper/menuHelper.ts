@@ -1,11 +1,11 @@
+import { AppRouteModule } from '/@/router/types';
+import type { MenuModule, Menu, AppRouteRecordRaw } from '/@/router/types';
+import { findPath, treeMap } from '/@/utils/helper/treeHelper';
 import { cloneDeep } from 'lodash-es';
+import { isUrl } from '/@/utils/is';
+import { iconifyRender } from '/@/utils/icon';
 import { RouteParams } from 'vue-router';
 import { toRaw } from 'vue';
-import { AppRouteModule } from '@/router/types';
-import type { MenuModule, Menu, AppRouteRecordRaw } from '@/router/types';
-import { findPath, treeMap } from '@/utils/helper/treeHelper';
-import { isUrl } from '@/utils/is';
-import { iconifyRender } from '@/utils';
 
 export function getAllParentPath<T = Recordable>(treeData: T[], path: string) {
   const menuList = findPath(treeData, n => n.path === path) as Menu[];
@@ -37,15 +37,14 @@ export function transformMenuModule(menuModule: MenuModule): Menu {
   joinParentPath(menuList);
   return menuList[0];
 }
-
+/** 从路由中生产菜单 */
 export function transformRouteToMenu(routeModList: AppRouteModule[], routerMapping = false) {
   const cloneRouteModList = cloneDeep(routeModList);
   const routeList: AppRouteRecordRaw[] = [];
 
   cloneRouteModList.forEach(item => {
     if (routerMapping && item.meta.hideChildrenInMenu && typeof item.redirect === 'string') {
-      // item.path = item.redirect;
-      Object.assign(item, { path: item.redirect });
+      item.path = item.redirect;
     }
     if (item.meta?.single) {
       const realItem = item?.children?.[0];
@@ -56,16 +55,15 @@ export function transformRouteToMenu(routeModList: AppRouteModule[], routerMappi
   });
   const list = treeMap(routeList, {
     conversion: (node: AppRouteRecordRaw) => {
-      const { meta: { title, hideMenu = false } = {} } = node;
-
+      const { meta: { title, icon, hideMenu = false } = {} } = node;
+      // console.log('菜单图标:', icon);
       return {
         ...(node.meta || {}),
         meta: node.meta,
-        name: node.name,
-        label: title,
+        name: title,
         hideMenu,
+        icon: icon ? iconifyRender(icon) : undefined,
         path: node.path,
-        icon: node.meta.icon ? iconifyRender(node.meta.icon) : undefined,
         ...(node.redirect ? { redirect: node.redirect } : {})
       };
     }
@@ -80,7 +78,7 @@ export function transformRouteToMenu(routeModList: AppRouteModule[], routerMappi
 const menuParamRegex = /(?::)([\s\S]+?)((?=\/)|$)/g;
 export function configureDynamicParamsMenu(menu: Menu, params: RouteParams) {
   const { path, paramPath } = toRaw(menu);
-  let realPath = paramPath || path;
+  let realPath = paramPath ? paramPath : path;
   const matchArr = realPath.match(menuParamRegex);
 
   matchArr?.forEach(it => {
@@ -91,11 +89,9 @@ export function configureDynamicParamsMenu(menu: Menu, params: RouteParams) {
   });
   // save original param path.
   if (!paramPath && matchArr && matchArr.length > 0) {
-    // menu.paramPath = path;
-    Object.assign(menu, { paramPath: path });
+    menu.paramPath = path;
   }
-  // menu.path = realPath;
-  Object.assign(menu, { path: realPath });
+  menu.path = realPath;
   // children
   menu.children?.forEach(item => configureDynamicParamsMenu(item, params));
 }

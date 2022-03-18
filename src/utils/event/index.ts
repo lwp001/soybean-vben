@@ -4,15 +4,14 @@ const isServer = typeof window === 'undefined';
 
 /* istanbul ignore next */
 function resizeHandler(entries: any[]) {
-  // for (const entry of entries)
-  entries.forEach(entry => {
+  for (const entry of entries) {
     const listeners = entry.target.__resizeListeners__ || [];
     if (listeners.length) {
       listeners.forEach((fn: () => any) => {
         fn();
       });
     }
-  });
+  }
 }
 
 /* istanbul ignore next */

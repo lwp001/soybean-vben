@@ -3,7 +3,7 @@ import {
   // FunctionalComponent, CSSProperties
 } from 'vue';
 import { NSpin } from 'naive-ui';
-import { noop } from '@/utils';
+import { noop } from '/@/utils';
 
 // const Loading: FunctionalComponent<{ size: 'small' | 'default' | 'large' }> = (props) => {
 //   const style: CSSProperties = {
@@ -20,7 +20,7 @@ import { noop } from '@/utils';
 // };
 
 interface Options {
-  size?: 'small' | 'medium' | 'large' | number;
+  size?: 'medium' | 'small' | 'large' | number;
   delay?: number;
   timeout?: number;
   loading?: boolean;

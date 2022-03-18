@@ -1,11 +1,9 @@
-import type { ErrorMessageMode } from '@/interface';
-// import router from '@/router';
-// import { PageEnum } from '@/enums/pageEnum';
-import { useUserStoreWithOut } from '@/store/modules/user';
-import projectSetting from '@/settings/system';
-import { SessionTimeoutProcessingEnum } from '@/enum/common/httpEnum';
+import type { ErrorMessageMode } from '/#/axios';
+// import router from '/@/router';
+// import { PageEnum } from '/@/enums/pageEnum';
+import { useUserStoreWithOut } from '/@/store/modules/user';
 
-const stp = projectSetting.sessionTimeoutProcessing;
+// import { SessionTimeoutProcessingEnum } from '/@/enums/appEnum';
 const { $message: createMessage, $dialog: createErrorModal } = window;
 
 export function checkStatus(status: number, msg: string, errorMessageMode: ErrorMessageMode = 'message'): void {
@@ -22,11 +20,11 @@ export function checkStatus(status: number, msg: string, errorMessageMode: Error
     case 401:
       userStore.setToken(undefined);
       errMessage = msg || '用户没有权限!';
-      if (stp === SessionTimeoutProcessingEnum.PAGE_COVERAGE) {
-        userStore.setSessionTimeout(true);
-      } else {
-        userStore.logout(true);
-      }
+      // if (stp === SessionTimeoutProcessingEnum.PAGE_COVERAGE) {
+      //   userStore.setSessionTimeout(true);
+      // } else {
+      userStore.logout(true);
+      // }
       break;
     case 403:
       errMessage = '用户得到授权，但是访问是被禁止的!';

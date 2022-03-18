@@ -1,6 +1,6 @@
-import type { AppRouteModule } from '@/router/types';
+import type { AppRouteModule } from '/@/router/types';
 
-import { LAYOUT } from '@/router/constant';
+import { LAYOUT } from '/@/router/constant';
 
 const system: AppRouteModule = {
   path: '/system',
@@ -20,7 +20,7 @@ const system: AppRouteModule = {
         title: '账号管理',
         ignoreKeepAlive: false
       },
-      component: () => import('@/views/system/account/index.vue')
+      component: () => import('/@/views/demo/system/account/index.vue')
     },
     {
       path: 'account_detail/:id',
@@ -32,7 +32,7 @@ const system: AppRouteModule = {
         showMenu: false,
         currentActiveMenu: '/system/account'
       },
-      component: () => import('@/views/system/account/AccountDetail.vue')
+      component: () => import('/@/views/demo/system/account/AccountDetail.vue')
     },
     {
       path: 'role',
@@ -41,7 +41,7 @@ const system: AppRouteModule = {
         title: '角色管理',
         ignoreKeepAlive: true
       },
-      component: () => import('@/views/system/role/index.vue')
+      component: () => import('/@/views/demo/system/role/index.vue')
     },
 
     {
@@ -51,7 +51,7 @@ const system: AppRouteModule = {
         title: '菜单管理',
         ignoreKeepAlive: true
       },
-      component: () => import('@/views/system/menu/index.vue')
+      component: () => import('/@/views/demo/system/menu/index.vue')
     },
     {
       path: 'dept',
@@ -60,7 +60,7 @@ const system: AppRouteModule = {
         title: '部门管理',
         ignoreKeepAlive: true
       },
-      component: () => import('@/views/system/dept/index.vue')
+      component: () => import('/@/views/demo/system/dept/index.vue')
     },
     {
       path: 'changePassword',
@@ -69,7 +69,7 @@ const system: AppRouteModule = {
         title: '修改密码',
         ignoreKeepAlive: true
       },
-      component: () => import('@/views/system/password/index.vue')
+      component: () => import('/@/views/demo/system/password/index.vue')
     }
   ]
 };

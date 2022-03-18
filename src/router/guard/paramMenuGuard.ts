@@ -1,23 +1,7 @@
 import type { Router } from 'vue-router';
 import { configureDynamicParamsMenu } from '../helper/menuHelper';
-import { Menu } from '../types';
-import { PermissionModeEnum } from '@/enum';
-import { useAppStoreWithOut } from '@/store/modules/app';
 
-import { usePermissionStoreWithOut } from '@/store/modules/permission';
-
-const getPermissionMode = () => {
-  const appStore = useAppStoreWithOut();
-  return appStore.getProjectConfig.permissionMode;
-};
-
-const isBackMode = () => {
-  return getPermissionMode() === PermissionModeEnum.BACK;
-};
-
-const isRouteMappingMode = () => {
-  return getPermissionMode() === PermissionModeEnum.ROUTE_MAPPING;
-};
+import { usePermissionStoreWithOut } from '/@/store/modules/permission';
 
 export function createParamMenuGuard(router: Router) {
   const permissionStore = usePermissionStoreWithOut();
@@ -34,12 +18,8 @@ export function createParamMenuGuard(router: Router) {
       return;
     }
 
-    let menus: Menu[] = [];
-    if (isBackMode()) {
-      menus = permissionStore.getBackMenuList;
-    } else if (isRouteMappingMode()) {
-      menus = permissionStore.getFrontMenuList;
-    }
+    const menus = permissionStore.getBackMenuList;
+
     menus.forEach(item => configureDynamicParamsMenu(item, to.params));
 
     next();

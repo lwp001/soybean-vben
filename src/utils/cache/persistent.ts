@@ -1,9 +1,8 @@
+import type { LockInfo, UserInfo } from '/#/store';
+import type { ProjectConfig } from '/#/config';
 import type { RouteLocationNormalized } from 'vue-router';
-import { toRaw } from 'vue';
-import { pick, omit } from 'lodash-es';
-import type { LockInfo, UserInfo, ProjectConfig } from '@/interface';
 
-import { createLocalStorage, createSessionStorage } from '@/utils/cache';
+import { createLocalStorage, createSessionStorage } from '/@/utils/cache';
 import { Memory } from './memory';
 import {
   TOKEN_KEY,
@@ -14,8 +13,10 @@ import {
   APP_LOCAL_CACHE_KEY,
   APP_SESSION_CACHE_KEY,
   MULTIPLE_TABS_KEY
-} from '@/enum';
-import { DEFAULT_CACHE_TIME } from '@/settings/encryptionSetting';
+} from '/@/enums/cacheEnum';
+import { DEFAULT_CACHE_TIME } from '/@/settings/encryptionSetting';
+import { toRaw } from 'vue';
+import { pick, omit } from 'lodash-es';
 
 interface BasicStore {
   [TOKEN_KEY]: string | number | null | undefined;
@@ -80,7 +81,6 @@ export class Persistent {
     sessionMemory.remove(key);
     immediate && ss.set(APP_SESSION_CACHE_KEY, sessionMemory.getCache);
   }
-
   static clearSession(immediate = false): void {
     sessionMemory.clear();
     immediate && ss.clear();
@@ -96,7 +96,7 @@ export class Persistent {
   }
 }
 
-window.addEventListener('beforeunload', () => {
+window.addEventListener('beforeunload', function () {
   // TOKEN_KEY 在登录或注销时已经写入到storage了，此处为了解决同时打开多个窗口时token不同步的问题
   // LOCK_INFO_KEY 在锁屏和解锁时写入，此处也不应修改
   ls.set(APP_LOCAL_CACHE_KEY, {

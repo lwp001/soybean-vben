@@ -9,7 +9,7 @@ const DEFAULT_CONFIG: TreeHelperConfig = {
   pid: 'pid'
 };
 
-const getConfig = (config: Partial<TreeHelperConfig>) => ({ ...DEFAULT_CONFIG, ...config });
+const getConfig = (config: Partial<TreeHelperConfig>) => Object.assign({}, DEFAULT_CONFIG, config);
 
 // tree from list
 export function listToTree<T = any>(list: any[], config: Partial<TreeHelperConfig> = {}): T[] {
@@ -91,8 +91,8 @@ export function findPathAll(tree: any, func: Fn, config: Partial<TreeHelperConfi
   const path: any[] = [];
   const list = [...tree];
   const result: any[] = [];
-  const visitedSet = new Set();
-  const { children } = config;
+  const visitedSet = new Set(),
+    { children } = config;
   while (list.length) {
     const node = list[0];
     if (visitedSet.has(node)) {
@@ -127,7 +127,7 @@ export function forEach<T = any>(tree: T[], func: (n: T) => any, config: Partial
   const list: any[] = [...tree];
   const { children } = config;
   for (let i = 0; i < list.length; i++) {
-    // func 返回true就终止遍历，避免大量节点场景下无意义循环，引起浏览器卡顿
+    //func 返回true就终止遍历，避免大量节点场景下无意义循环，引起浏览器卡顿
     if (func(list[i])) {
       return;
     }
@@ -158,10 +158,11 @@ export function treeMapEach(data: any, { children = 'children', conversion }: { 
         })
       )
     };
+  } else {
+    return {
+      ...conversionData
+    };
   }
-  return {
-    ...conversionData
-  };
 }
 
 /**

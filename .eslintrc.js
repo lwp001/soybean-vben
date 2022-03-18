@@ -1,7 +1,11 @@
-module.exports = {
+// @ts-check
+const { defineConfig } = require('eslint-define-config');
+module.exports = defineConfig({
+  root: true,
   env: {
     browser: true,
-    es2021: true
+    node: true,
+    es6: true
   },
   globals: {
     defineProps: 'readonly',
@@ -15,36 +19,71 @@ module.exports = {
   },
   parser: 'vue-eslint-parser',
   parserOptions: {
-    ecmaVersion: 12,
     parser: '@typescript-eslint/parser',
-    sourceType: 'module'
+    ecmaVersion: 12,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true
+    }
   },
-  plugins: ['vue', '@typescript-eslint'],
-  extends: ['plugin:vue/vue3-recommended', 'airbnb-base', '@vue/typescript/recommended', 'plugin:prettier/recommended'],
+  extends: [
+    'plugin:vue/vue3-recommended',
+    'plugin:@typescript-eslint/recommended',
+    'prettier',
+    'plugin:prettier/recommended',
+    'plugin:jest/recommended'
+  ],
   rules: {
-    'no-unused-vars': 'off',
-    'import/extensions': 'off',
-    'import/no-extraneous-dependencies': 'off',
-    'import/no-unresolved': 0,
-    'no-shadow': 0,
-    'import/prefer-default-export': 0,
-    'no-use-before-define': 'off',
-    'vue/multi-word-component-names': 0,
-    'max-classes-per-file': 0,
-    '@typescript-eslint/no-explicit-any': 0,
-    '@typescript-eslint/no-inferrable-types': 0,
+    'vue/script-setup-uses-vars': 'error',
     '@typescript-eslint/ban-ts-ignore': 'off',
-    '@typescript-eslint/ban-types': 'off',
-    '@typescript-eslint/no-var-requires': 'off',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/no-empty-function': 'off',
+    'vue/custom-event-name-casing': 'off',
+    'no-use-before-define': 'off',
+    '@typescript-eslint/no-use-before-define': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
+    '@typescript-eslint/ban-types': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
-    '@typescript-eslint/no-unused-vars': ['warn', { ignoreRestSiblings: false }],
-    '@typescript-eslint/no-use-before-define': ['error', { classes: true, functions: false, typedefs: false }],
-    'no-unused-expressions': 0, // 禁用 a() && b()
-    'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
-    'no-console': 'off', // 不允许使用 console 输出
-    '@typescript-eslint/ban-ts-comment': 'off' // --@ts-ignore
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_'
+      }
+    ],
+    'no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_'
+      }
+    ],
+    'space-before-function-paren': 'off',
+
+    'vue/attributes-order': 'off',
+    'vue/one-component-per-file': 'off',
+    'vue/html-closing-bracket-newline': 'off',
+    'vue/max-attributes-per-line': 'off',
+    'vue/multiline-html-element-content-newline': 'off',
+    'vue/singleline-html-element-content-newline': 'off',
+    'vue/attribute-hyphenation': 'off',
+    'vue/require-default-prop': 'off',
+    'vue/require-explicit-emits': 'off',
+    'vue/html-self-closing': [
+      'error',
+      {
+        html: {
+          void: 'always',
+          normal: 'never',
+          component: 'always'
+        },
+        svg: 'always',
+        math: 'always'
+      }
+    ],
+    'vue/multi-word-component-names': 'off'
   }
-};
+});

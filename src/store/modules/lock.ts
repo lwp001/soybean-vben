@@ -1,8 +1,9 @@
-import { defineStore } from 'pinia';
-import type { LockInfo } from '@/interface';
+import type { LockInfo } from '/#/store';
 
-import { LOCK_INFO_KEY } from '@/enum';
-import { Persistent } from '@/utils/cache/persistent';
+import { defineStore } from 'pinia';
+
+import { LOCK_INFO_KEY } from '/@/enums/cacheEnum';
+import { Persistent } from '/@/utils/cache/persistent';
 import { useUserStore } from './user';
 
 interface LockState {
@@ -21,7 +22,7 @@ export const useLockStore = defineStore({
   },
   actions: {
     setLockInfo(info: LockInfo) {
-      this.lockInfo = { ...this.lockInfo, ...info };
+      this.lockInfo = Object.assign({}, this.lockInfo, info);
       Persistent.setLocal(LOCK_INFO_KEY, this.lockInfo, true);
     },
     resetLockInfo() {

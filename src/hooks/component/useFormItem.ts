@@ -5,16 +5,16 @@ import { isEqual } from 'lodash-es';
 
 export function useRuleFormItem<T extends Recordable, K extends keyof T, V = UnwrapRef<T[K]>>(
   props: T,
-  emitData?: Ref<any[]>,
   key?: K,
-  changeEvent?: any
+  changeEvent?,
+  emitData?: Ref<any[]>
 ): [WritableComputedRef<V>, (val: V) => void, DeepReadonly<V>];
 
 export function useRuleFormItem<T extends Recordable>(
   props: T,
-  emitData?: Ref<any[]>,
   key: keyof T = 'value',
-  changeEvent = 'change'
+  changeEvent = 'change',
+  emitData?: Ref<any[]>
 ) {
   const instance = getCurrentInstance();
   const emit = instance?.emit;

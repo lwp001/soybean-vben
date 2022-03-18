@@ -1,14 +1,13 @@
-import { computed, onUnmounted, unref, watchEffect } from 'vue';
+import { computed, onUnmounted, watchEffect } from 'vue';
 import { useThrottleFn } from '@vueuse/core';
 
-import { useAppStore } from '@/store/modules/app';
-import { useLockStore } from '@/store/modules/lock';
+import { useAppStore } from '/@/store/modules/app';
+import { useLockStore } from '/@/store/modules/lock';
 
-import { useUserStore } from '@/store/modules/user';
-import { useRootSetting } from '../setting/useRootSetting';
+import { useUserStore } from '/@/store/modules/user';
 
 export function useLockPage() {
-  const { getLockTime } = useRootSetting();
+  const getLockTime = true;
   const lockStore = useLockStore();
   const userStore = useUserStore();
   const appStore = useAppStore();
@@ -25,7 +24,7 @@ export function useLockPage() {
       clear();
       return;
     }
-    const { lockTime } = appStore.getProjectConfig;
+    const lockTime = appStore.getProjectConfig.lockTime;
     if (!lockTime || lockTime < 1) {
       clear();
       return;
@@ -62,10 +61,11 @@ export function useLockPage() {
   const keyupFn = useThrottleFn(resetCalcLockTimeout, 2000);
 
   return computed(() => {
-    if (unref(getLockTime)) {
+    if (getLockTime) {
       return { onKeyup: keyupFn, onMousemove: keyupFn };
+    } else {
+      clear();
+      return {};
     }
-    clear();
-    return {};
   });
 }

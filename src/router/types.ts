@@ -1,17 +1,17 @@
 import type { RouteRecordRaw, RouteMeta } from 'vue-router';
-
+import type { VNodeChild } from 'vue';
 import { defineComponent } from 'vue';
-import type { MenuOption } from 'naive-ui';
 
 export type Component<T = any> =
   | ReturnType<typeof defineComponent>
   | (() => Promise<typeof import('*.vue')>)
   | (() => Promise<T>);
 
+// @ts-ignore
 export interface AppRouteRecordRaw extends Omit<RouteRecordRaw, 'meta'> {
   name: string;
   meta: RouteMeta;
-  component: Component | string;
+  component?: Component | string;
   components?: Component;
   children?: AppRouteRecordRaw[];
   props?: Recordable;
@@ -24,18 +24,17 @@ export interface MenuTag {
   dot?: boolean;
 }
 
-// /** 菜单项配置 */
-// export type GlobalMenuOption = MenuOption & {
-//   routeName: string;
-//   routePath: string;
-// };
-/** 菜单项配置 */
-export type Menu = MenuOption & {
+export interface Menu {
   name: string;
+  // icon?: string;
+  icon?: () => VNodeChild;
+
   path: string;
 
   // path contains param, auto assignment.
   paramPath?: string;
+
+  disabled?: boolean;
 
   children?: Menu[];
 
@@ -46,7 +45,7 @@ export type Menu = MenuOption & {
   tag?: MenuTag;
 
   hideMenu?: boolean;
-};
+}
 
 export interface MenuModule {
   orderNo?: number;

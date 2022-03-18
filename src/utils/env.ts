@@ -1,6 +1,7 @@
-import type { GlobEnvConfig } from '@/interface/common/env';
+import UAParser from 'ua-parser-js';
+import type { GlobEnvConfig } from '/#/config';
 
-import { warn } from '@/utils/log';
+import { warn } from '/@/utils/log';
 import pkg from '../../package.json';
 import { getConfigFileName } from '../../build/getConfigFileName';
 
@@ -80,4 +81,11 @@ export function isDevMode(): boolean {
  */
 export function isProdMode(): boolean {
   return import.meta.env.PROD;
+}
+
+/** 获取设备信息 */
+export function useDeviceInfo() {
+  const parser = new UAParser();
+  const result = parser.getResult();
+  return result;
 }

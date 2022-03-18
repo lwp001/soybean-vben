@@ -1,8 +1,11 @@
+/**
+ * Configure and register global directives
+ */
 import type { App } from 'vue';
-import setupNetworkDirective from './network';
-import setupLoginDirective from './login';
+import { setupPermissionDirective } from './permission';
+import { setupLoadingDirective } from './loading';
 
-export function setupDirectives(app: App) {
-  setupNetworkDirective(app);
-  setupLoginDirective(app);
+export function setupGlobDirectives(app: App) {
+  setupPermissionDirective(app);
+  setupLoadingDirective(app);
 }

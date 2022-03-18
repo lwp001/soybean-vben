@@ -1,30 +1,32 @@
-import type { RouteLocationNormalized, RouteLocationRaw, Router } from 'vue-router';
+// import { Menu } from '/@/router/types';
+import type { RouteLocationNormalized, RouteLocationRaw, Router, RouteLocationMatched } from 'vue-router';
 
 import { toRaw, unref } from 'vue';
 import { defineStore } from 'pinia';
-import type { ScrollbarInst } from 'naive-ui';
-import { store } from '@/store';
+import { store } from '/@/store';
 
-import { useGo, useRedo } from '@/hooks/web/usePage';
-import { Persistent } from '@/utils/cache/persistent';
+import { useGo, useRedo } from '/@/hooks/web/usePage';
+import { Persistent } from '/@/utils/cache/persistent';
 
-import { PageEnum, MULTIPLE_TABS_KEY } from '@/enum';
-import { PAGE_NOT_FOUND_ROUTE, REDIRECT_ROUTE } from '@/router/routes/basic';
-import { getRawRoute } from '@/utils';
+import { PageEnum } from '/@/enums/pageEnum';
+import { PAGE_NOT_FOUND_ROUTE, REDIRECT_ROUTE } from '/@/router/routes/basic';
+import { getRawRoute } from '/@/utils';
+import { MULTIPLE_TABS_KEY } from '/@/enums/cacheEnum';
 
-import projectSetting from '@/settings/system';
-import { useUserStore } from '@/store/modules/user';
-
-/** 布局状态 */
-interface LayoutState {
-  scrollbar: ScrollbarInst | null;
-}
+import projectSetting from '/@/settings/projectSetting';
+import { useUserStore } from '/@/store/modules/user';
 
 export interface MultipleTabState {
+  /** 缓存的路由(标签)名称 */
   cacheTabList: Set<string>;
+  /** 标签列表 */
   tabList: RouteLocationNormalized[];
+  /** 最后拖动的索引 */
   lastDragEndIndex: number;
-  layout: LayoutState;
+  /** 面包屑数据 */
+  breadCrumbOptions: RouteLocationMatched[];
+  /** 当前路由路径 */
+  activeRouterPath: string;
 }
 
 function handleGotoPage(router: Router) {
@@ -52,49 +54,56 @@ export const useMultipleTabStore = defineStore({
     tabList: cacheTab ? Persistent.getLocal(MULTIPLE_TABS_KEY) || [] : [],
     // Index of the last moved tab
     lastDragEndIndex: 0,
-    layout: {
-      scrollbar: null
-    }
+    breadCrumbOptions: [],
+    activeRouterPath: ''
   }),
   getters: {
+    /** 获取标签列表 */
     getTabList(): RouteLocationNormalized[] {
       return this.tabList;
     },
+    /** 获取需要缓存的组件名称 */
     getCachedTabList(): string[] {
       return Array.from(this.cacheTabList);
     },
     getLastDragEndIndex(): number {
       return this.lastDragEndIndex;
+    },
+    /** 获取面包屑数据 */
+    getBreadCrumb(): RouteLocationMatched[] {
+      return this.breadCrumbOptions;
+    },
+    getActivePath(): string {
+      return this.activeRouterPath;
     }
   },
   actions: {
-    /** 设置scrollbar的实例 */
-    setScrollbarInstance(scrollbar: ScrollbarInst) {
-      this.layout.scrollbar = scrollbar;
+    /** 获取面包屑数据 */
+    setBreadCrumb(breadCrumbLIst: RouteLocationMatched[] | undefined) {
+      if (breadCrumbLIst !== undefined) {
+        this.breadCrumbOptions = breadCrumbLIst;
+      }
     },
-    /** 重置滚动条行为 */
-    resetScrollBehavior() {
-      const { scrollbar } = this.layout;
-      setTimeout(() => {
-        scrollbar?.scrollTo({ left: 0, top: 0 });
-      }, 250);
+    setActivePath(path: string) {
+      this.activeRouterPath = path;
     },
     /**
      * Update the cache according to the currently opened tabs
+     * 更新缓存组件名称
      */
     async updateCacheTab() {
       const cacheMap: Set<string> = new Set();
 
-      // for (const tab of this.tabList)
-      this.tabList.forEach(tab => {
+      for (const tab of this.tabList) {
         const item = getRawRoute(tab);
         // Ignore the cache
         const needCache = !item.meta?.ignoreKeepAlive;
-        if (needCache) {
-          const name = item.name as string;
-          cacheMap.add(name);
+        if (!needCache) {
+          continue;
         }
-      });
+        const name = item.name as string;
+        cacheMap.add(name);
+      }
       this.cacheTabList = cacheMap;
     },
 
@@ -104,7 +113,7 @@ export const useMultipleTabStore = defineStore({
     async refreshPage(router: Router) {
       const { currentRoute } = router;
       const route = unref(currentRoute);
-      const { name } = route;
+      const name = route.name;
 
       const findTab = this.getCachedTabList.find(item => item === name);
       if (findTab) {
@@ -113,7 +122,6 @@ export const useMultipleTabStore = defineStore({
       const redo = useRedo(router);
       await redo();
     },
-
     clearCacheTabs(): void {
       this.cacheTabList = new Set();
     },
@@ -141,6 +149,7 @@ export const useMultipleTabStore = defineStore({
 
     async addTab(route: RouteLocationNormalized) {
       const { path, name, fullPath, params, query, meta } = getRawRoute(route);
+
       // 404  The page does not need to add a tab
       if (
         path === PageEnum.ERROR_PAGE ||
@@ -150,12 +159,13 @@ export const useMultipleTabStore = defineStore({
       ) {
         return;
       }
-
+      // console.log('tablist len: ', this.tabList.length);
       let updateIndex = -1;
       // Existing pages, do not add tabs repeatedly
       const tabHasExits = this.tabList.some((tab, index) => {
         updateIndex = index;
-        return (tab.fullPath || tab.path) === (fullPath || path);
+        return tab.path === path;
+        // return (tab.fullPath || tab.path) === (fullPath || path);
       });
 
       // If the tab already exists, perform the update operation
@@ -171,29 +181,32 @@ export const useMultipleTabStore = defineStore({
       } else {
         // Add tab
         // 获取动态路由打开数，超过 0 即代表需要控制打开数
-        const dynamicLevel = (meta?.dynamicLevel ?? -1) as number;
+        const dynamicLevel = meta?.dynamicLevel ?? -1;
         if (dynamicLevel > 0) {
           // 如果动态路由层级大于 0 了，那么就要限制该路由的打开数限制了
           // 首先获取到真实的路由，使用配置方式减少计算开销.
           // const realName: string = path.match(/(\S*)\//)![1];
           const realPath = meta?.realPath ?? '';
           // 获取到已经打开的动态路由数, 判断是否大于某一个值
-          if (this.tabList.filter(e => e.meta?.realPath ?? realPath === '').length >= dynamicLevel) {
+          if (this.tabList.filter(e => e.meta?.realPath ?? '' === realPath).length >= dynamicLevel) {
             // 关闭第一个
             const index = this.tabList.findIndex(item => item.meta.realPath === realPath);
             index !== -1 && this.tabList.splice(index, 1);
+            // console.log('tab store tablist sort---');
           }
         }
         this.tabList.push(route);
+        // console.log('store tab:', this.tabList);
       }
+
       this.updateCacheTab();
       cacheTab && Persistent.setLocal(MULTIPLE_TABS_KEY, this.tabList);
     },
 
     async closeTab(tab: RouteLocationNormalized, router: Router) {
       const close = (route: RouteLocationNormalized) => {
-        const { fullPath, meta } = route;
-        if (meta.affix) {
+        const { fullPath, meta: { affix } = {} } = route;
+        if (affix) {
           return;
         }
         const index = this.tabList.findIndex(item => item.fullPath === fullPath);
@@ -268,7 +281,8 @@ export const useMultipleTabStore = defineStore({
       const currentTab = this.tabList[oldIndex];
       this.tabList.splice(oldIndex, 1);
       this.tabList.splice(newIndex, 0, currentTab);
-      this.lastDragEndIndex += 1;
+
+      this.lastDragEndIndex = this.lastDragEndIndex + 1;
     },
 
     // Close the tab on the right and jump
@@ -278,13 +292,12 @@ export const useMultipleTabStore = defineStore({
       if (index > 0) {
         const leftTabs = this.tabList.slice(0, index);
         const pathList: string[] = [];
-        // for (const item of leftTabs)
-        leftTabs.forEach(item => {
+        for (const item of leftTabs) {
           const affix = item?.meta?.affix ?? false;
           if (!affix) {
             pathList.push(item.fullPath);
           }
-        });
+        }
         this.bulkCloseTabs(pathList);
       }
       this.updateCacheTab();
@@ -299,13 +312,12 @@ export const useMultipleTabStore = defineStore({
         const rightTabs = this.tabList.slice(index + 1, this.tabList.length);
 
         const pathList: string[] = [];
-        // for (const item of rightTabs)
-        rightTabs.forEach(item => {
+        for (const item of rightTabs) {
           const affix = item?.meta?.affix ?? false;
           if (!affix) {
             pathList.push(item.fullPath);
           }
-        });
+        }
         this.bulkCloseTabs(pathList);
       }
       this.updateCacheTab();
@@ -326,18 +338,18 @@ export const useMultipleTabStore = defineStore({
 
       const pathList: string[] = [];
 
-      // for (const path of closePathList)
-      closePathList.forEach(path => {
+      for (const path of closePathList) {
         if (path !== route.fullPath) {
           const closeItem = this.tabList.find(item => item.path === path);
-          if (closeItem) {
-            const affix = closeItem?.meta?.affix ?? false;
-            if (!affix) {
-              pathList.push(closeItem.fullPath);
-            }
+          if (!closeItem) {
+            continue;
+          }
+          const affix = closeItem?.meta?.affix ?? false;
+          if (!affix) {
+            pathList.push(closeItem.fullPath);
           }
         }
-      });
+      }
       this.bulkCloseTabs(pathList);
       this.updateCacheTab();
       handleGotoPage(router);
@@ -362,7 +374,7 @@ export const useMultipleTabStore = defineStore({
     },
     /**
      * replace tab's path
-     * * */
+     * **/
     async updateTabPath(fullPath: string, route: RouteLocationNormalized) {
       const findTab = this.getTabList.find(item => item === route);
       if (findTab) {

@@ -1,9 +1,8 @@
 import type { RouteLocationNormalized, RouteRecordNormalized } from 'vue-router';
 import type { App, Plugin } from 'vue';
 
-import { unref, h } from 'vue';
-import { Icon } from '@iconify/vue';
-import { isObject } from '@/utils/is';
+import { unref } from 'vue';
+import { isObject } from '/@/utils/is';
 
 export const noop = () => {};
 
@@ -27,7 +26,7 @@ export function getPopupContainer(node?: HTMLElement): HTMLElement {
 export function setObjToUrlParams(baseUrl: string, obj: any): string {
   let parameters = '';
   for (const key in obj) {
-    parameters += `${key}=${encodeURIComponent(obj[key])}&`;
+    parameters += key + '=' + encodeURIComponent(obj[key]) + '&';
   }
   parameters = parameters.replace(/&$/, '');
   return /\?$/.test(baseUrl) ? baseUrl + parameters : baseUrl.replace(/\/?$/, '?') + parameters;
@@ -66,6 +65,7 @@ export function getDynamicProps<T, U>(props: T): Partial<U> {
 }
 
 export function getRawRoute(route: RouteLocationNormalized): RouteLocationNormalized {
+  // console.log('getRawRoute:', route);
   if (!route) return route;
   const { matched, ...opt } = route;
   return {
@@ -90,31 +90,3 @@ export const withInstall = <T>(component: T, alias?: string) => {
   };
   return component as T & Plugin;
 };
-
-/**
- * 动态渲染iconify
- * @param icon - 图标名称
- * @param color - 图标颜色
- * @param size - 图标大小
- */
-export function iconifyRender(icon: string, color?: string, size?: number) {
-  const style: { color?: string; size?: string } = {};
-  if (color) {
-    style.color = color;
-  }
-  if (size) {
-    style.size = `${size}px`;
-  }
-  return () => h(Icon, { icon, style });
-}
-
-/**
- * 获取指定整数范围内的随机整数
- * @param start - 开始范围
- * @param end - 结束范围
- */
-export function getRandomInterger(end: number, start: number = 0) {
-  const range = end - start;
-  const random = Math.floor(Math.random() * range + start);
-  return random;
-}

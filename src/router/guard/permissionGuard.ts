@@ -1,13 +1,13 @@
 import type { Router, RouteRecordRaw } from 'vue-router';
 
-import { usePermissionStoreWithOut } from '@/store/modules/permission';
+import { usePermissionStoreWithOut } from '/@/store/modules/permission';
 
-import { PageEnum } from '@/enum';
-import { useUserStoreWithOut } from '@/store/modules/user';
+import { PageEnum } from '/@/enums/pageEnum';
+import { useUserStoreWithOut } from '/@/store/modules/user';
 
-import { PAGE_NOT_FOUND_ROUTE } from '@/router/routes/basic';
+import { PAGE_NOT_FOUND_ROUTE } from '/@/router/routes/basic';
 
-import { RootRoute } from '@/router/routes';
+import { RootRoute } from '/@/router/routes';
 
 const LOGIN_PATH = PageEnum.BASE_LOGIN;
 
@@ -41,9 +41,7 @@ export function createPermissionGuard(router: Router) {
             next((to.query?.redirect as string) || '/');
             return;
           }
-        } catch {
-          console.log('路由切换错误~');
-        }
+        } catch {}
       }
       next();
       return;
@@ -104,6 +102,8 @@ export function createPermissionGuard(router: Router) {
     });
 
     router.addRoute(PAGE_NOT_FOUND_ROUTE as unknown as RouteRecordRaw);
+
+    // console.log('重建后路由:', router.getRoutes());
 
     permissionStore.setDynamicAddedRoute(true);
 

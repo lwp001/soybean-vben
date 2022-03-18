@@ -3,8 +3,8 @@ import type { RouteLocationNormalized, Router } from 'vue-router';
 import { useRouter } from 'vue-router';
 import { unref } from 'vue';
 
-import { useMultipleTabStore } from '@/store/modules/multipleTab';
-import { useAppStore } from '@/store/modules/app';
+import { useMultipleTabStore } from '/@/store/modules/multipleTab';
+import { useAppStore } from '/@/store/modules/app';
 
 enum TableActionEnum {
   REFRESH,
@@ -85,8 +85,6 @@ export function useTabs(_router?: Router) {
       case TableActionEnum.CLOSE_CURRENT:
       case TableActionEnum.CLOSE:
         await tabStore.closeTab(tab || currentTab, router);
-        break;
-      default:
         break;
     }
   }

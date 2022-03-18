@@ -1,41 +1,44 @@
-import type { AppRouteModule } from '@/router/types';
+import type { AppRouteModule } from '/@/router/types';
 
-import { LAYOUT } from '@/router/constant';
+import { LAYOUT } from '/@/router/constant';
+const IFrame = () => import('/@/views/sys/iframe/FrameBlank.vue');
 
 const iframe: AppRouteModule = {
   path: '/frame',
   name: 'Frame',
   component: LAYOUT,
-  redirect: '/frame/vue',
+  redirect: '/frame/doc',
   meta: {
     orderNo: 1000,
-    icon: 'carbon:document',
-    title: '文档'
+    icon: 'ion:tv-outline',
+    title: '外部页面'
   },
 
   children: [
     {
-      path: 'vue',
-      name: 'DocVue',
-      component: () => import('@/views/document/vue/index.vue'),
+      path: 'doc',
+      name: 'Doc',
+      component: IFrame,
       meta: {
-        title: 'Vue文档'
+        frameSrc: 'https://vvbin.cn/doc-next/',
+        title: '项目文档(内嵌)'
       }
     },
     {
-      path: 'naive',
-      name: 'DocNaive',
-      component: () => import('@/views/document/naive/index.vue'),
+      path: 'antv',
+      name: 'Antv',
+      component: IFrame,
       meta: {
-        title: 'Naive文档'
+        frameSrc: 'https://2x.antdv.com/docs/vue/introduce-cn/',
+        title: 'antVue文档(内嵌)'
       }
     },
     {
-      path: 'vite',
-      name: 'DocVite',
-      component: () => import('@/views/document/vite/index.vue'),
+      path: 'https://vvbin.cn/doc-next/',
+      name: 'DocExternal',
+      component: IFrame,
       meta: {
-        title: 'Vite文档'
+        title: '项目文档(外链)'
       }
     }
   ]

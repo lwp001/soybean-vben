@@ -1,12 +1,13 @@
 import type { AxiosRequestConfig, AxiosInstance, AxiosResponse, AxiosError } from 'axios';
+import type { RequestOptions, Result, UploadFileParams } from '/#/axios';
+import type { CreateAxiosOptions } from './axiosTransform';
 import axios from 'axios';
 import qs from 'qs';
-import { cloneDeep } from 'lodash-es';
-import type { RequestOptions, Result, UploadFileParams } from '@/interface';
-import type { CreateAxiosOptions } from './axiosTransform';
 import { AxiosCanceler } from './axiosCancel';
-import { isFunction } from '@/utils/is';
-import { ContentTypeEnum, RequestEnum } from '@/enum/common/httpEnum';
+import { isFunction } from '/@/utils/is';
+import { cloneDeep } from 'lodash-es';
+import { ContentTypeEnum } from '/@/enums/httpEnum';
+import { RequestEnum } from '/@/enums/httpEnum';
 
 export * from './axiosTransform';
 
@@ -15,7 +16,6 @@ export * from './axiosTransform';
  */
 export class VAxios {
   private axiosInstance: AxiosInstance;
-
   private readonly options: CreateAxiosOptions;
 
   constructor(options: CreateAxiosOptions) {
@@ -76,11 +76,8 @@ export class VAxios {
     // Request interceptor configuration processing
     this.axiosInstance.interceptors.request.use((config: AxiosRequestConfig) => {
       // If cancel repeat request is turned on, then cancel repeat request is prohibited
-      const {
-        // @ts-ignore
-        headers: { ignoreCancelToken }
-      } = config;
-
+      // @ts-ignore
+      const { ignoreCancelToken } = config.requestOptions;
       const ignoreCancel =
         ignoreCancelToken !== undefined ? ignoreCancelToken : this.options.requestOptions?.ignoreCancelToken;
 
@@ -191,7 +188,7 @@ export class VAxios {
 
     const { requestOptions } = this.options;
 
-    const opt: RequestOptions = { ...requestOptions, ...options };
+    const opt: RequestOptions = Object.assign({}, requestOptions, options);
 
     const { beforeRequestHook, requestCatchHook, transformRequestHook } = transform || {};
     if (beforeRequestHook && isFunction(beforeRequestHook)) {

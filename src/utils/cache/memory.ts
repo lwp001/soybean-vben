@@ -9,7 +9,6 @@ const NOT_ALIVE = 0;
 
 export class Memory<T = any, V = any> {
   private cache: { [key in keyof T]?: Cache<V> } = {};
-
   private alive: number;
 
   constructor(alive = NOT_ALIVE) {
@@ -21,7 +20,7 @@ export class Memory<T = any, V = any> {
     return this.cache;
   }
 
-  setCache(cache: any) {
+  setCache(cache) {
     this.cache = cache;
   }
 
@@ -38,9 +37,9 @@ export class Memory<T = any, V = any> {
     return this.cache[key];
   }
 
-  set<K extends keyof T>(key: K, value: V, inExpires?: number) {
+  set<K extends keyof T>(key: K, value: V, expires?: number) {
     let item = this.get(key);
-    let expires = inExpires;
+
     if (!expires || (expires as number) <= 0) {
       expires = this.alive;
     }
@@ -77,7 +76,6 @@ export class Memory<T = any, V = any> {
       clearTimeout(item.timeoutId!);
       return item.value;
     }
-    return undefined;
   }
 
   resetCache(cache: { [K in keyof T]: Cache }) {

@@ -1,6 +1,6 @@
-import type { AppRouteModule } from '@/router/types';
+import type { AppRouteModule } from '/@/router/types';
 
-import { LAYOUT } from '@/router/constant';
+import { LAYOUT } from '/@/router/constant';
 
 const dashboard: AppRouteModule = {
   path: '/about',
@@ -17,7 +17,7 @@ const dashboard: AppRouteModule = {
     {
       path: 'index',
       name: 'AboutPage',
-      component: () => import('@/views/about/index.vue'),
+      component: () => import('/@/views/sys/about/index.vue'),
       meta: {
         title: '关于',
         icon: 'simple-icons:about-dot-me',

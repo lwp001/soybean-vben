@@ -1,11 +1,4 @@
 <template>
-  <n-space :vertical="true" :size="16">
-    <workbench-header />
-    <workbench-main />
-  </n-space>
+  <div class="p-4">工作台</div>
 </template>
-<script lang="ts" setup>
-import { NSpace } from 'naive-ui';
-import { WorkbenchHeader, WorkbenchMain } from './components';
-</script>
-<style scoped></style>
+<script lang="ts" setup></script>

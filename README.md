@@ -1,124 +1,169 @@
-<div align="center">
-	<img src="https://i.loli.net/2021/11/24/x5lLfuSnEawBAgi.png"/>
-	<h1>Soybean Admin</h1>
+<div align="center"> <a href="https://github.com/anncwb/vue-vben-admin"> <img alt="VbenAdmin Logo" width="200" height="200" src="https://anncwb.github.io/anncwb/images/logo.png"> </a> <br> <br>
+
+[![license](https://img.shields.io/github/license/anncwb/vue-vben-admin.svg)](LICENSE)
+
+<h1>Vue vben admin</h1>
 </div>
 
-[![license](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
+**English** | [中文](./README.zh-CN.md)
 
-## 简介
+## Introduction
 
-Soybean Admin 是一个基于 Vue3、Vite、Naive UI、TypeScript 的免费中后台模版，它使用了最新的前端技术栈，内置丰富的插件，有着极高的代码规范，开箱即用的中后台前端解决方案，也可用于学习参考。
+Vue Vben Admin is a free and open source middle and back-end template. Using the latest `vue3`, `vite2`, `TypeScript` and other mainstream technology development, the out-of-the-box middle and back-end front-end solutions can also be used for learning reference.
 
-## 特性
+## Feature
 
-- **最新技术栈**：使用 Vue3/vite2 等前端前沿技术开发, 使用高效率的npm包管理器pnpm
-- **TypeScript**: 应用程序级 JavaScript 的语言
-- **主题**：丰富可配置的主题
-- **代码规范**：丰富的规范插件及极高的代码规范
-- **路由配置**：简易的路由配置
+- **State of The Art Development**：Use front-end front-end technology development such as Vue3/vite2
+- **TypeScript**: Application-level JavaScript language
+- **Theming**: Configurable themes
+- **International**：Built-in complete internationalization program
+- **Mock Server** Built-in mock data scheme
+- **Authority** Built-in complete dynamic routing permission generation scheme.
+- **Component** Multiple commonly used components are encapsulated twice
 
 ## 预览
 
-- [soybean-admin](https://soybean.pro/)
+- [vue-vben-admin](https://vvbin.cn/next/) - Full version Chinese site
+- [vue-vben-admin-gh-pages](https://anncwb.github.io/vue-vben-admin/) - Full version of the github site
+- [vben-admin-thin-next](https://vvbin.cn/thin/next/) - Simplified Chinese site
+- [vben-admin-thin-gh-pages](https://anncwb.github.io/vben-admin-thin-next/) -Simplified github site
 
-## 文档
+Test account: vben/123456
 
-- [项目文档](https://docs.soybean.pro)
+<p align="center">
+    <img alt="VbenAdmin Logo" width="100%" src="https://anncwb.github.io/anncwb/images/preview1.png">
+    <img alt="VbenAdmin Logo" width="100%" src="https://anncwb.github.io/anncwb/images/preview2.png">
+    <img alt="VbenAdmin Logo" width="100%" src="https://anncwb.github.io/anncwb/images/preview3.png">
+</p>
 
-### 代码仓库
+### Use Gitpod
 
-- [github](https://github.com/honghuangdc/soybean-admin)
+Open the project in Gitpod (free online dev environment for GitHub) and start coding immediately.
 
-- [gitee](https://gitee.com/honghuangdc/soybean-admin)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/anncwb/vue-vben-admin)
 
-## 项目示例图
-![](https://i.loli.net/2021/11/24/pIhTKP7fdCqbVHl.png)
+## Documentation
 
-![](https://i.loli.net/2021/11/24/gxRwsLnKi6IVp7C.png)
+[Document](https://vvbin.cn/doc-next/)
 
-![](https://i.loli.net/2021/11/24/UmVfjSJbxH6iYc2.png)
+## Preparation
 
-![](https://i.loli.net/2021/11/24/Uot1bcfGXiF726T.png)
+- [node](http://nodejs.org/) and [git](https://git-scm.com/) - Project development environment
+- [Vite](https://vitejs.dev/) - Familiar with vite features
+- [Vue3](https://v3.vuejs.org/) - Familiar with Vue basic syntax
+- [TypeScript](https://www.typescriptlang.org/) - Familiar with the basic syntax of `TypeScript`
+- [Es6+](http://es6.ruanyifeng.com/) - Familiar with es6 basic syntax
+- [Vue-Router-Next](https://next.router.vuejs.org/) - Familiar with the basic use of vue-router
+- [Ant-Design-Vue](https://2x.antdv.com/docs/vue/introduce-cn/) - ui basic use
+- [Mock.js](https://github.com/nuysoft/Mock) - mockjs basic syntax
 
-![](https://i.loli.net/2021/11/24/WzOIvlgJZaUtGm7.png)
+## Install and use
 
-### 使用 Gitpod
-
-在 Gitpod（适用于 GitHub 的免费在线开发环境）中打开项目，并立即开始编码.
-
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/honghuangdc/soybean-admin)
-
-## 安装使用
-
-- 克隆代码
-
-```bash
-git clone https://github.com/honghuangdc/soybean-admin.git
-```
-
-- 安装依赖
-
-```bash
-pnpm i
-```
-
-- 运行
+- Get the project code
 
 ```bash
-pnpm dev
+git clone https://github.com/anncwb/vue-vben-admin.git
 ```
 
-- 打包
+- Installation dependencies
+
+```bash
+cd vue-vben-admin
+
+pnpm install
+
+```
+
+- run
+
+```bash
+pnpm serve
+```
+
+- build
 
 ```bash
 pnpm build
 ```
 
-## 如何贡献
+## Change Log
 
-非常欢迎您的加入！[提一个 Issue](https://github.com/honghuangdc/soybean-admin/issues/new) 或者提交一个 Pull Request。
+[CHANGELOG](./CHANGELOG.zh_CN.md)
 
-## Git 贡献提交规范
+## Project
 
-项目已经内置angular提交规范，通过git cz 代替git commit 命令即可。
+- [vue-vben-admin](https://github.com/anncwb/vue-vben-admin) - full version
+- [vue-vben-admin-thin-next](https://github.com/anncwb/vben-admin-thin-next) - Simplified version
 
-git cz命令需要全局安装 commitizen
+## How to contribute
 
-```bash
-pnpm i -g commitizen
-```
+You are very welcome to join！[Raise an issue](https://github.com/anncwb/vue-vben-admin/issues/new/choose) Or submit a Pull Request。
 
-## 浏览器支持
+**Pull Request:**
 
-本地开发推荐使用`Chrome 90+` 浏览器
+1. Fork code!
+2. Create your own branch: `git checkout -b feat/xxxx`
+3. Submit your changes: `git commit -am 'feat(function): add xxxxx'`
+4. Push your branch: `git push origin feat/xxxx`
+5. submit`pull request`
 
-支持现代浏览器, 不支持 IE
+## Git Contribution submission specification
 
-| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/archive/internet-explorer_9-11/internet-explorer_9-11_48x48.png" alt="IE" width="24px" height="24px"  />](http://godban.github.io/browsers-support-badges/)IE | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt=" Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)Safari |
+- reference [vue](https://github.com/vuejs/vue/blob/dev/.github/COMMIT_CONVENTION.md) specification ([Angular](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular))
+
+  - `feat` Add new features
+  - `fix` Fix the problem/BUG
+  - `style` The code style is related and does not affect the running result
+  - `perf` Optimization/performance improvement
+  - `refactor` Refactor
+  - `revert` Undo edit
+  - `test` Test related
+  - `docs` Documentation/notes
+  - `chore` Dependency update/scaffolding configuration modification etc.
+  - `workflow` Workflow improvements
+  - `ci` Continuous integration
+  - `types` Type definition file changes
+  - `wip` In development
+
+## Related warehouse
+
+If these plugins are helpful to you, you can give a star support
+
+- [vite-plugin-mock](https://github.com/anncwb/vite-plugin-mock) - Used for local and development environment data mock
+- [vite-plugin-html](https://github.com/anncwb/vite-plugin-html) - Used for html template conversion and compression
+- [vite-plugin-style-import](https://github.com/anncwb/vite-plugin-style-import) - Used for component library style introduction on demand
+- [vite-plugin-theme](https://github.com/anncwb/vite-plugin-theme) - Used for online switching of theme colors and other color-related configurations
+- [vite-plugin-imagemin](https://github.com/anncwb/vite-plugin-imagemin) - Used to pack compressed image resources
+- [vite-plugin-compression](https://github.com/anncwb/vite-plugin-compression) - Used to pack input .gz|.brotil files
+- [vite-plugin-svg-icons](https://github.com/anncwb/vite-plugin-svg-icons) - Used to quickly generate svg sprite
+
+## Browser support
+
+The `Chrome 80+` browser is recommended for local development
+
+Support modern browsers, not IE
+
+| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt=" Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>IE | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt=" Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari |
 | :-: | :-: | :-: | :-: | :-: |
 | not support | last 2 versions | last 2 versions | last 2 versions | last 2 versions |
 
-## 开源作者
+## Maintainer
 
-[@Soybean](https://github.com/honghuangdc)
+[@Vben](https://github.com/anncwb)
 
-## 交流
+## Donate
 
-`Soybean Admin` 是完全开源免费的项目，在帮助开发者更方便地进行中大型管理系统开发，同时也提供 QQ 交流群使用问题欢迎在群内提问。
+If you think this project is helpful to you, you can help the author buy a cup of coffee to show your support!
 
-- 微信交流群：
-  <div style="text-align:left">
-    <img src="https://s2.loli.net/2021/12/21/gI7OGZ1REbSCtWT.jpg" style="width:200px" />
-  </div>
+![donate](https://anncwb.github.io/anncwb/images/sponsor.png)
 
-- QQ 群 `711301266`
+<a style="display: block;width: 100px;height: 50px;line-height: 50px; color: #fff;text-align: center; background: #408aed;border-radius: 4px;" href="https://www.paypal.com/paypalme/cvvben">Paypal Me</a>
 
-  <div style="text-align:left">
-    <img src="https://i.loli.net/2021/11/24/1J6REWXiHomU2kM.jpg" style="width:200px" />
-  </div>
+## Discord
 
-- 本人微信号：honghuangdc，欢迎来技术交流，业务咨询。
+- [github discussions](https://github.com/anncwb/vue-vben-admin/discussions)
+- [Discord](https://discord.gg/8GuAdwDhj6)
 
 ## License
 
-[MIT © Soybean-2021](./LICENSE)
+[MIT © Vben-2020](./LICENSE)
