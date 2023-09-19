@@ -1,48 +1,38 @@
-// import 'virtual:windi-base.css';
-// import 'virtual:windi-components.css';
-// import '/@/design/index.less';
-// import 'virtual:windi-utilities.css';
-// Register icon sprite
-// import 'virtual:svg-icons-register';
-import App from './App.vue';
 import { createApp } from 'vue';
-// import { initAppConfigStore } from '/@/logics/initAppConfig';
-import { setupErrorHandle } from '/@/logics/error-handle';
-import { router, setupRouter } from '/@/router';
-import { setupRouterGuard } from '/@/router/guard';
-import { setupStore } from '/@/store';
-import { setupGlobDirectives } from '/@/directives';
+import App from './App.vue';
+import AppLoading from './components/common/app-loading.vue';
+import { setupDirectives } from './directives';
+import { setupRouter } from './router';
+import { setupAssets } from './plugins';
+import { setupStore } from './store';
+import { setupI18n } from './locales';
 
-import { setupAssets, setupNaiveUI } from '/@/plugins';
-
-async function bootstrap() {
-  // 引入静态资源
+async function setupApp() {
+  // import assets: js、css
   setupAssets();
+
+  // app loading
+  const appLoading = createApp(AppLoading);
+
+  appLoading.mount('#appLoading');
 
   const app = createApp(App);
 
-  // Configure store
+  // store plugin: pinia
   setupStore(app);
 
-  // 按需引入naiveUI
-  setupNaiveUI(app);
+  // vue custom directives
+  setupDirectives(app);
 
-  // Configure routing
-  setupRouter(app);
+  // vue router
+  await setupRouter(app);
 
-  // router-guard
-  setupRouterGuard(router);
+  setupI18n(app);
 
-  // Register global directive
-  setupGlobDirectives(app);
+  appLoading.unmount();
 
-  // Configure global error handling
-  setupErrorHandle(app);
-
-  // https://next.router.vuejs.org/api/#isready
-  // await router.isReady();
-
+  // mount app
   app.mount('#app');
 }
 
-bootstrap();
+setupApp();

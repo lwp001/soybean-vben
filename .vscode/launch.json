@@ -4,10 +4,17 @@
     {
       "type": "chrome",
       "request": "launch",
-      "name": "Launch Chrome",
-      "url": "http://localhost:3100",
-      "webRoot": "${workspaceFolder}/src",
-      "sourceMaps": true
+      "name": "Vue debugger",
+      "url": "http://localhost:3200",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "TS debugger",
+      "skipFiles": ["<node_internals>/**"],
+      "runtimeArgs": ["--loader", "tsx"],
+      "program": "${relativeFile}"
     }
   ]
 }

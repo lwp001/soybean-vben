@@ -1,37 +1,27 @@
-import type { RouteRecordRaw } from 'vue-router';
 import type { App } from 'vue';
+import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router';
+import { transformRouteNameToRoutePath } from '@/utils';
+import { constantRoutes } from './routes';
+import { scrollBehavior } from './helpers';
+import { createRouterGuard } from './guard';
 
-import { createRouter, createWebHashHistory } from 'vue-router';
-import { basicRoutes } from './routes';
+const { VITE_HASH_ROUTE = 'N', VITE_BASE_URL } = import.meta.env;
 
-// 白名单应该包含基本静态路由
-const WHITE_NAME_LIST: string[] = [];
-const getRouteNames = (array: any[]) =>
-  array.forEach(item => {
-    WHITE_NAME_LIST.push(item.name);
-    getRouteNames(item.children || []);
-  });
-getRouteNames(basicRoutes);
-
-// app router
 export const router = createRouter({
-  history: createWebHashHistory(import.meta.env.VITE_PUBLIC_PATH),
-  routes: basicRoutes as unknown as RouteRecordRaw[],
-  strict: true,
-  scrollBehavior: () => ({ left: 0, top: 0 })
+  history: VITE_HASH_ROUTE === 'Y' ? createWebHashHistory(VITE_BASE_URL) : createWebHistory(VITE_BASE_URL),
+  routes: constantRoutes,
+  scrollBehavior
 });
 
-// reset router
-export function resetRouter() {
-  router.getRoutes().forEach(route => {
-    const { name } = route;
-    if (name && !WHITE_NAME_LIST.includes(name as string)) {
-      router.hasRoute(name) && router.removeRoute(name);
-    }
-  });
+/** setup vue router. - [安装vue路由] */
+export async function setupRouter(app: App) {
+  app.use(router);
+  createRouterGuard(router);
+  await router.isReady();
 }
 
-// config router
-export function setupRouter(app: App<Element>) {
-  app.use(router);
-}
+/** 路由路径 */
+export const routePath = (key: string) => transformRouteNameToRoutePath(key);
+
+export * from './routes';
+export * from './modules';

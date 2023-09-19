@@ -1,32 +1,26 @@
-/**
- * Global authority directive
- * Used for fine-grained control of component permissions
- * @Example v-auth="RoleEnum.TEST"
- */
-import type { App, Directive, DirectiveBinding } from 'vue';
+import type { App, Directive } from 'vue';
+import { usePermission } from '@/composables';
 
-import { usePermission } from '/@/hooks/web/usePermission';
-
-function isAuth(el: Element, binding: any) {
+export default function setupPermissionDirective(app: App) {
   const { hasPermission } = usePermission();
 
-  const value = binding.value;
-  if (!value) return;
-  if (!hasPermission(value)) {
-    el.parentNode?.removeChild(el);
+  function updateElVisible(el: HTMLElement, permission: Auth.RoleType | Auth.RoleType[]) {
+    if (!permission) {
+      throw new Error(`need roles: like v-permission="'admin'", v-permission="['admin', 'test]"`);
+    }
+    if (!hasPermission(permission)) {
+      el.parentElement?.removeChild(el);
+    }
   }
+
+  const permissionDirective: Directive<HTMLElement, Auth.RoleType | Auth.RoleType[]> = {
+    mounted(el, binding) {
+      updateElVisible(el, binding.value);
+    },
+    beforeUpdate(el, binding) {
+      updateElVisible(el, binding.value);
+    }
+  };
+
+  app.directive('permission', permissionDirective);
 }
-
-const mounted = (el: Element, binding: DirectiveBinding<any>) => {
-  isAuth(el, binding);
-};
-
-const authDirective: Directive = {
-  mounted
-};
-
-export function setupPermissionDirective(app: App) {
-  app.directive('auth', authDirective);
-}
-
-export default authDirective;

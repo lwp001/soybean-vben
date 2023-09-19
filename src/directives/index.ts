@@ -1,11 +1,11 @@
-/**
- * Configure and register global directives
- */
 import type { App } from 'vue';
-import { setupPermissionDirective } from './permission';
-import { setupLoadingDirective } from './loading';
+import setupNetworkDirective from './network';
+import setupLoginDirective from './login';
+import setupPermissionDirective from './permission';
 
-export function setupGlobDirectives(app: App) {
+/** setup custom vue directives. - [安装自定义的vue指令] */
+export function setupDirectives(app: App) {
+  setupNetworkDirective(app);
+  setupLoginDirective(app);
   setupPermissionDirective(app);
-  setupLoadingDirective(app);
 }

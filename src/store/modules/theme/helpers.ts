@@ -1,11 +1,19 @@
 import type { GlobalThemeOverrides } from 'naive-ui';
-import { cloneDeep, kebabCase } from 'lodash-es';
-import { themeSetting } from '/@/settings';
-import { getColorPalette, addColorAlpha } from '/@/utils/color';
+import { cloneDeep } from 'lodash-es';
+import { themeSetting } from '@/settings';
+import { sessionStg, addColorAlpha, getColorPalette } from '@/utils';
 
-/** 获取主题配置 */
-export function getThemeSettings() {
-  const themeColor = window.localStorage.getItem('theme-color') || themeSetting.themeColor;
+/** 初始化主题配置 */
+export function initThemeSettings() {
+  const isProd = import.meta.env.PROD;
+  // 生产环境才缓存主题配置，本地开发实时调整配置更改配置的json
+  const storageSettings = sessionStg.get('themeSettings');
+
+  if (isProd && storageSettings) {
+    return storageSettings;
+  }
+
+  const themeColor = sessionStg.get('themeColor') || themeSetting.themeColor;
   const info = themeSetting.isCustomizeInfoColor ? themeSetting.otherColor.info : getColorPalette(themeColor, 7);
   const otherColor = { ...themeSetting.otherColor, info };
   const setting = cloneDeep({ ...themeSetting, themeColor, otherColor });
@@ -15,9 +23,8 @@ export function getThemeSettings() {
 type ColorType = 'primary' | 'info' | 'success' | 'warning' | 'error';
 type ColorScene = '' | 'Suppl' | 'Hover' | 'Pressed' | 'Active';
 type ColorKey = `${ColorType}Color${ColorScene}`;
-type ThemeColor = {
-  [key in ColorKey]?: string;
-};
+type ThemeColor = Partial<Record<ColorKey, string>>;
+
 interface ColorAction {
   scene: ColorScene;
   handler: (color: string) => string;
@@ -69,34 +76,5 @@ export function getNaiveThemeOverrides(colors: Record<ColorType, string>): Globa
     LoadingBar: {
       colorLoading
     }
-  };
-}
-
-type ThemeVars = Exclude<GlobalThemeOverrides['common'], undefined>;
-type ThemeVarsKeys = keyof ThemeVars;
-
-/** 添加css vars至html */
-export function addThemeCssVarsToHtml(themeVars: ThemeVars) {
-  const keys = Object.keys(themeVars) as ThemeVarsKeys[];
-  const style: string[] = [];
-  keys.forEach(key => {
-    style.push(`--${kebabCase(key)}: ${themeVars[key]}`);
-  });
-  const styleStr = style.join(';');
-  document.documentElement.style.cssText += styleStr;
-}
-
-/** windicss 暗黑模式 */
-export function handleWindicssDarkMode() {
-  const DARK_CLASS = 'dark';
-  function addDarkClass() {
-    document.documentElement.classList.add(DARK_CLASS);
-  }
-  function removeDarkClass() {
-    document.documentElement.classList.remove(DARK_CLASS);
-  }
-  return {
-    addDarkClass,
-    removeDarkClass
   };
 }

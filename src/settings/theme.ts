@@ -1,20 +1,20 @@
 import {
-  EnumThemeLayoutMode,
-  EnumThemeTabMode,
-  EnumThemeHorizontalMenuPosition,
-  EnumThemeAnimateMode
-} from '/@/enums/theme';
-import type { ThemeSetting } from '/@/typings';
+  themeLayoutModeOptions,
+  themeScrollModeOptions,
+  themeTabModeOptions,
+  themeHorizontalMenuPositionOptions,
+  themeAnimateModeOptions
+} from '@/constants';
 import jsonSetting from './theme.json';
 
 const themeColorList = [
   '#1890ff',
   '#409EFF',
-  '#2d8cf0',
   '#007AFF',
   '#5ac8fa',
   '#5856D6',
   '#536dfe',
+  '#646cff',
   '#9c27b0',
   '#AF52DE',
   '#0096c7',
@@ -34,19 +34,18 @@ const themeColorList = [
   '#546e7a'
 ];
 
-const defaultThemeSetting: ThemeSetting = {
+const defaultThemeSetting: Theme.Setting = {
   darkMode: false,
+  followSystemTheme: true,
+  isCustomizeDarkModeTransition: false,
   layout: {
     minWidth: 900,
     mode: 'vertical',
-    modeList: [
-      { value: 'vertical', label: EnumThemeLayoutMode.vertical },
-      { value: 'vertical-mix', label: EnumThemeLayoutMode['vertical-mix'] },
-      { value: 'horizontal', label: EnumThemeLayoutMode.horizontal },
-      { value: 'horizontal-mix', label: EnumThemeLayoutMode['horizontal-mix'] }
-    ]
+    modeList: themeLayoutModeOptions
   },
-  themeColor: themeColorList[0],
+  scrollMode: 'content',
+  scrollModeList: themeScrollModeOptions,
+  themeColor: themeColorList[6],
   themeColorList,
   otherColor: {
     info: '#2080f0',
@@ -58,6 +57,7 @@ const defaultThemeSetting: ThemeSetting = {
   fixedHeaderAndTab: true,
   showReload: true,
   header: {
+    inverted: false,
     height: 56,
     crumb: {
       visible: true,
@@ -68,13 +68,11 @@ const defaultThemeSetting: ThemeSetting = {
     visible: true,
     height: 44,
     mode: 'chrome',
-    modeList: [
-      { value: 'chrome', label: EnumThemeTabMode.chrome },
-      { value: 'button', label: EnumThemeTabMode.button }
-    ],
+    modeList: themeTabModeOptions,
     isCache: true
   },
   sider: {
+    inverted: false,
     width: 220,
     collapsedWidth: 64,
     mixWidth: 80,
@@ -83,28 +81,20 @@ const defaultThemeSetting: ThemeSetting = {
   },
   menu: {
     horizontalPosition: 'flex-start',
-    horizontalPositionList: [
-      { value: 'flex-start', label: EnumThemeHorizontalMenuPosition['flex-start'] },
-      { value: 'center', label: EnumThemeHorizontalMenuPosition.center },
-      { value: 'flex-end', label: EnumThemeHorizontalMenuPosition['flex-end'] }
-    ]
+    horizontalPositionList: themeHorizontalMenuPositionOptions
   },
   footer: {
+    visible: true,
     fixed: false,
-    height: 48
+    right: true,
+    height: 48,
+    inverted: false
   },
   page: {
     animate: true,
     animateMode: 'fade-slide',
-    animateModeList: [
-      { value: 'fade-slide', label: EnumThemeAnimateMode['fade-slide'] },
-      { value: 'fade', label: EnumThemeAnimateMode.fade },
-      { value: 'fade-bottom', label: EnumThemeAnimateMode['fade-bottom'] },
-      { value: 'fade-scale', label: EnumThemeAnimateMode['fade-scale'] },
-      { value: 'zoom-fade', label: EnumThemeAnimateMode['zoom-fade'] },
-      { value: 'zoom-out', label: EnumThemeAnimateMode['zoom-out'] }
-    ]
+    animateModeList: themeAnimateModeOptions
   }
 };
 
-export const themeSetting = (jsonSetting as ThemeSetting) || defaultThemeSetting;
+export const themeSetting = (jsonSetting as Theme.Setting) || defaultThemeSetting;

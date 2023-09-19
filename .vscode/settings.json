@@ -1,147 +1,77 @@
 {
+	"cSpell.ignorePaths": [
+		"package.json",
+		"package-lock.json",
+		"yarn.lock",
+		"pnpm-lock.yaml",
+		"node_modules",
+		"vscode-extension",
+		".git/objects",
+		".vscode",
+		".vscode-insiders",
+		"CHANGELOG.md",
+		"dist",
+		"public",
+		"styles"
+	],
+	"cSpell.words": [
+		"AMAP",
+		"antdesign",
+		"antv",
+		"apacheecharts",
+		"areaspline",
+		"bmapgl",
+		"colord",
+		"echarts",
+		"gitee",
+		"gridicons",
+		"iconify",
+		"jsapi",
+		"naiveui",
+		"Popconfirm",
+		"Posva",
+		"Shenzhen",
+		"Sider",
+		"tauri",
+		"unocss",
+		"unplugin",
+		"vditor",
+		"VERCEL",
+		"Vite",
+		"vitejs",
+		"vuedraggable",
+		"vueuse",
+		"wangeditor",
+		"wechat",
+		"xgplayer",
+		"yanbowe",
+		"ភាសាខ្មែរ"
+	],
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true
+	},
+	"editor.fontLigatures": true,
+	"editor.formatOnSave": false,
+	"editor.formatOnPaste": false,
 	"editor.quickSuggestions": {
 		"strings": true
 	},
-	"workbench.iconTheme": "material-icon-theme",
-	"workbench.colorTheme": "One Dark Pro",
-	"editor.fontLigatures": true,
-	"editor.bracketPairColorization.enabled": true,
-	"editor.guides.bracketPairs": "active",
-	"git.enableSmartCommit": true,
-	"gutterpreview.paths": {
-		"/@/": "${workspaceRoot}/src",
-	},
-	"terminal.integrated.cursorStyle": "line",
+	"editor.tabSize": 2,
+	"eslint.validate": ["json"],
 	"files.associations": {
-		"*.env.*": "dotenv"
+		"*.env.*": "dotenv",
+		"*.svg": "html"
 	},
-	"[jsonc]": {
-		"editor.defaultFormatter": "vscode.json-language-features"
-	},
-	"[json]": {
-		"editor.defaultFormatter": "vscode.json-language-features"
-	},
-	"[javascript]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	},
-	"javascript.updateImportsOnFileMove.enabled": "always",
-
-	"terminal.integrated.fontSize": 14,
-	"terminal.integrated.fontWeight": 500,
-
-	"terminal.integrated.tabs.enabled": true,
-
-	"vue3snippets.enable-compile-vue-file-on-did-save-code": false,
-	"editor.formatOnSave": false,
-	"material-icon-theme.activeIconPack": "angular",
-	"material-icon-theme.files.associations": {},
-	"material-icon-theme.folders.associations": {
-		"enum": "typescript",
-		"enums": "typescript",
-		"store": "context",
-		"stores": "context",
-		"composable": "hook",
-		"composables": "hook",
-		"directive": "tools",
-		"directives": "tools",
-		"business": "core"
-	},
-
-
-
-  "typescript.tsdk": "./node_modules/typescript/lib",
-  // "volar.tsPlugin": true,
-  // "volar.tsPluginStatus": false,
-  "npm.packageManager": "pnpm",
-  "editor.tabSize": 2,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "files.eol": "\n",
-  "search.exclude": {
-    "**/node_modules": true,
-    "**/*.log": true,
-    "**/*.log*": true,
-    "**/bower_components": true,
-    "**/dist": true,
-    "**/elehukouben": true,
-    "**/.git": true,
-    "**/.gitignore": true,
-    "**/.svn": true,
-    "**/.DS_Store": true,
-    "**/.idea": true,
-    "**/.vscode": false,
-    "**/yarn.lock": true,
-    "**/tmp": true,
-    "out": true,
-    "dist": true,
-    "node_modules": true,
-    "CHANGELOG.md": true,
-    "examples": true,
-    "res": true,
-    "screenshots": true,
-    "yarn-error.log": true,
-    "**/.yarn": true
-  },
-  "files.exclude": {
-    "**/.cache": true,
-    "**/.editorconfig": true,
-    "**/.eslintcache": true,
-    "**/bower_components": true,
-    "**/.idea": true,
-    "**/tmp": true,
-    "**/.git": true,
-    "**/.svn": true,
-    "**/.hg": true,
-    "**/CVS": true,
-    "**/.DS_Store": true
-  },
-  "files.watcherExclude": {
-    "**/.git/objects/**": true,
-    "**/.git/subtree-cache/**": true,
-    "**/.vscode/**": true,
-    "**/node_modules/**": true,
-    "**/tmp/**": true,
-    "**/bower_components/**": true,
-    "**/dist/**": true,
-    "**/yarn.lock": true
-  },
-  // "stylelint.enable": true,
-  // "stylelint.packageManager": "yarn",
-  "path-intellisense.mappings": {
-    "/@/": "${workspaceRoot}/src"
-  },
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[html]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[css]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[less]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[scss]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
-  "[vue]": {
-    // "editor.codeActionsOnSave": {
-    //   "source.fixAll.eslint": false
-    // },
-    "editor.defaultFormatter": "johnsoncodehk.volar"
-  },
-  "i18n-ally.displayLanguage": "zh-CN"
-
+	"files.eol": "\n",
+	"i18n-ally.displayLanguage": "zh-CN",
+	"i18n-ally.enabledParsers": ["ts"],
+	"i18n-ally.enabledFrameworks": ["vue"],
+	"i18n-ally.editor.preferEditor": true,
+	"i18n-ally.keystyle": "nested",
+	"i18n-ally.localesPaths": ["src/locales/lang"],
+	"material-icon-theme.activeIconPack": "vue",
+	"[html][css][less][scss][sass][markdown][yaml][yml][jsonc]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.formatOnSave": true
+	}
 }
