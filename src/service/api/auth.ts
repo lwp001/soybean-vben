@@ -1,42 +1,49 @@
-import { mockRequest } from '../request';
-import type { ApiRouteData } from './../models/sys';
+import { request } from '../request';
 
 /**
- * 获取验证码
- * @param phone - 手机号
- * @returns - 返回boolean值表示是否发送成功
- */
-export function fetchSmsCode(phone: string) {
-  return mockRequest.post<boolean>('/getSmsCode', { phone });
-}
-
-/**
- * 登录
- * @param userName - 用户名
- * @param password - 密码
+ * Login
+ *
+ * @param userName User name
+ * @param password Password
  */
 export function fetchLogin(userName: string, password: string) {
-  return mockRequest.post<ApiAuth.Token>('/login', { userName, password });
+  return request<Api.Auth.LoginToken>({
+    url: '/auth/login',
+    method: 'post',
+    data: {
+      userName,
+      password
+    }
+  });
 }
 
-/** 获取用户信息 */
-export function fetchUserInfo() {
-  return mockRequest.get<ApiAuth.UserInfo>('/getUserInfo');
+/** Get user info */
+export function fetchGetUserInfo() {
+  return request<Api.Auth.UserInfo>({ url: '/auth/getUserInfo' });
 }
 
 /**
- * 获取用户路由数据
- * @param userId - 用户id
- * @description 后端根据用户id查询到对应的角色类型，并将路由筛选出对应角色的路由数据返回前端
+ * Refresh token
+ *
+ * @param refreshToken Refresh token
  */
-export function fetchUserRoutes(userId: string) {
-  return mockRequest.post<ApiRouteData>('/getUserRoutes', { userId });
+export function fetchRefreshToken(refreshToken: string) {
+  return request<Api.Auth.LoginToken>({
+    url: '/auth/refreshToken',
+    method: 'post',
+    data: {
+      refreshToken
+    }
+  });
 }
 
-/**
- * 刷新token
- * @param refreshToken
- */
-export function fetchUpdateToken(refreshToken: string) {
-  return mockRequest.post<ApiAuth.Token>('/updateToken', { refreshToken });
+export function fetchDebug() {
+  return request<string>({
+    url: '/debug-post',
+    method: 'post',
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    data: {
+      a: '1'
+    }
+  });
 }

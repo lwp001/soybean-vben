@@ -1,18 +1,8 @@
-export const dataTypeLabels: { [K in TypeUtil.DataTypeStringKey]: TypeUtil.DataTypeString<K> } = {
-  string: '[object String]',
-  number: '[object Number]',
-  boolean: '[object Boolean]',
-  null: '[object Null]',
-  undefined: '[object Undefined]',
-  symbol: '[object Symbol]',
-  bigInt: '[object BigInt]',
-  object: '[object Object]',
-  function: '[object Function]',
-  array: '[object Array]',
-  date: '[object Date]',
-  regExp: '[object RegExp]',
-  promise: '[object Promise]',
-  set: '[object Set]',
-  map: '[object Map]',
-  file: '[object File]'
+import { transformRecordToOption } from '@/utils/common';
+
+export const yesOrNoRecord: Record<CommonType.YesOrNo, App.I18n.I18nKey> = {
+  Y: 'common.yesOrNo.yes',
+  N: 'common.yesOrNo.no'
 };
+
+export const yesOrNoOptions = transformRecordToOption(yesOrNoRecord);

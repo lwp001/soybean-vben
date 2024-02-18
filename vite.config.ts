@@ -1,26 +1,22 @@
+import process from 'node:process';
+import { URL, fileURLToPath } from 'node:url';
 import { defineConfig, loadEnv } from 'vite';
-import { createViteProxy, getRootPath, getSrcPath, setupVitePlugins, viteDefine } from './build';
-import { getServiceEnvConfig } from './.env-config';
+import dayjs from 'dayjs';
+import { setupVitePlugins } from './build/plugins';
+import { createViteProxy } from './build/config';
 
 export default defineConfig(configEnv => {
-  const viteEnv = loadEnv(configEnv.mode, process.cwd()) as unknown as ImportMetaEnv;
-
-  const rootPath = getRootPath();
-  const srcPath = getSrcPath();
-
-  const isOpenProxy = viteEnv.VITE_HTTP_PROXY === 'Y';
-  const envConfig = getServiceEnvConfig(viteEnv);
+  const viteEnv = loadEnv(configEnv.mode, process.cwd()) as unknown as Env.ImportMeta;
+  const buildTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
 
   return {
     base: viteEnv.VITE_BASE_URL,
     resolve: {
       alias: {
-        '~': rootPath,
-        '@': srcPath
+        '~': fileURLToPath(new URL('./', import.meta.url)),
+        '@': fileURLToPath(new URL('./src', import.meta.url))
       }
     },
-    define: viteDefine,
-    plugins: setupVitePlugins(viteEnv),
     css: {
       preprocessorOptions: {
         scss: {
@@ -28,28 +24,23 @@ export default defineConfig(configEnv => {
         }
       }
     },
+    plugins: setupVitePlugins(viteEnv),
+    define: {
+      // BUILD_TIME: JSON.stringify(new Date().toISOString())
+      BUILD_TIME: JSON.stringify(buildTime)
+    },
     server: {
       host: '0.0.0.0',
-      port: 3200,
+      port: 9527,
       open: true,
-      proxy: createViteProxy(isOpenProxy, envConfig)
+      proxy: createViteProxy(viteEnv)
     },
-    optimizeDeps: {
-      include: [
-        '@antv/data-set',
-        '@antv/g2',
-        '@better-scroll/core',
-        'echarts',
-        'swiper',
-        'swiper/vue',
-        'vditor',
-        'wangeditor',
-        'xgplayer'
-      ]
+    preview: {
+      port: 9725
     },
     build: {
       reportCompressedSize: false,
-      sourcemap: false,
+      sourcemap: viteEnv.VITE_SOURCE_MAP === 'Y',
       commonjsOptions: {
         ignoreTryCatch: false
       }

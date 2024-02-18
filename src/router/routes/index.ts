@@ -1,77 +1,42 @@
-import type { RouteRecordRaw } from 'vue-router';
-import { BlankLayout } from '@/layouts';
+import type { RouteRecordItem } from '@/router/types';
 
-export const PAGE_NOT_FOUND = () => import('@/views/_builtin/404/index.vue');
+import { PAGE_NOT_FOUND_ROUTE } from '@/router/routes/basic';
 
-/** 根路由: / */
-export const ROOT_ROUTE: RouteRecordRaw = {
-  name: 'root',
+import { mainOutRoutes } from './mainOut';
+
+// import.meta.glob() 直接引入所有的模块 Vite 独有的功能
+const modules = import.meta.glob('./modules/**/*.ts', { eager: true });
+const routeModuleList: RouteRecordItem[] = [];
+
+// 加入到路由集合中
+Object.keys(modules).forEach(key => {
+  const mod = (modules as Recordable)[key].default || {};
+  const modList = Array.isArray(mod) ? [...mod] : [mod];
+  routeModuleList.push(...modList);
+});
+
+export const asyncRoutes = [PAGE_NOT_FOUND_ROUTE, ...routeModuleList];
+
+// 根路由
+export const RootRoute: RouteRecordItem = {
   path: '/',
-  redirect: import.meta.env.VITE_ROUTE_HOME_PATH,
+  name: 'Root',
+  redirect: '/home',
   meta: {
     title: 'Root'
   }
 };
 
-/** 404页面 */
-export const PAGE_NOT_FOUND_ROUTE: RouteRecordRaw = {
-  name: '404',
-  path: '/404',
-  component: PAGE_NOT_FOUND,
+export const LoginRoute: RouteRecordItem = {
+  path: '/login',
+  name: 'login',
+  component: () => import('@/views/_builtin/login/index.vue'),
   meta: {
-    title: '未找到',
-    singleLayout: 'blank'
+    title: 'login',
+    i18nKey: 'route.login'
   }
 };
 
-/** 固定的路由 */
-export const constantRoutes: RouteRecordRaw[] = [
-  ROOT_ROUTE,
-  {
-    name: 'login',
-    path: '/login',
-    component: () => import('@/views/_builtin/login/index.vue'),
-    meta: {
-      title: '登录',
-      singleLayout: 'blank'
-    }
-  },
-  {
-    name: 'constant-page',
-    path: '/constant-page',
-    component: () => import('@/views/_builtin/constant-page/index.vue'),
-    meta: {
-      title: '固定页面',
-      singleLayout: 'blank'
-    }
-  },
-  {
-    name: '403',
-    path: '/403',
-    component: () => import('@/views/_builtin/403/index.vue'),
-    meta: {
-      title: '无权限',
-      singleLayout: 'blank'
-    }
-  },
-  PAGE_NOT_FOUND_ROUTE,
-  {
-    name: '500',
-    path: '/500',
-    component: () => import('@/views/_builtin/500/index.vue'),
-    meta: {
-      title: '服务器错误',
-      singleLayout: 'blank'
-    }
-  },
-  // 匹配无效路径的路由
-  {
-    name: 'not-found',
-    path: '/:pathMatch(.*)*',
-    component: BlankLayout,
-    meta: {
-      title: '未找到',
-      singleLayout: 'blank'
-    }
-  }
-];
+// Basic routing without permission
+// 未经许可的基本路由
+export const basicRoutes = [LoginRoute, RootRoute, ...mainOutRoutes, PAGE_NOT_FOUND_ROUTE];

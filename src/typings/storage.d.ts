@@ -1,23 +1,34 @@
-declare namespace StorageInterface {
-  /** localStorage的存储数据的类型 */
+/** The storage namespace */
+declare namespace StorageType {
   interface Session {
-    /** 主题颜色 */
+    /** The theme color */
     themeColor: string;
-    /** 主题配置 */
-    themeSettings: Theme.Setting;
+    // /**
+    //  * the theme settings
+    //  */
+    // themeSettings: App.Theme.ThemeSetting;
   }
 
-  /** localStorage的存储数据的类型 */
   interface Local {
-    /** 用户token */
+    /** The i18n language */
+    lang: App.I18n.LangType;
+    /** The token */
     token: string;
-    /** 用户刷新token */
+    /** The refresh token */
     refreshToken: string;
-    /** 用户信息 */
-    userInfo: Auth.UserInfo;
-    /** 多页签路由信息 */
-    multiTabRoutes: App.GlobalTabRoute[];
-    /** 本地语言缓存 */
-    lang: I18nType.LangType;
+    /** The user info */
+    userInfo: Api.Auth.UserInfo;
+    /** The theme color */
+    themeColor: string;
+    /** The theme settings */
+    themeSettings: App.Theme.ThemeSetting;
+    /**
+     * The override theme flags
+     *
+     * The value is the build time of the project
+     */
+    overrideThemeFlag: string;
+    /** The global tabs */
+    globalTabs: App.Global.Tab[];
   }
 }

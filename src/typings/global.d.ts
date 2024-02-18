@@ -1,7 +1,13 @@
 interface Window {
+  /** NProgress instance */
+  NProgress?: import('nprogress').NProgress;
+  /** Loading bar instance */
   $loadingBar?: import('naive-ui').LoadingBarProviderInst;
+  /** Dialog instance */
   $dialog?: import('naive-ui').DialogProviderInst;
+  /** Message instance */
   $message?: import('naive-ui').MessageProviderInst;
+  /** Notification instance */
   $notification?: import('naive-ui').NotificationProviderInst;
 }
 
@@ -13,21 +19,23 @@ interface Document {
   startViewTransition?: (callback: () => Promise<void> | void) => ViewTransition;
 }
 
-/** 通用类型 */
-declare namespace Common {
-  /**
-   * 策略模式
-   * [状态, 为true时执行的回调函数]
-   */
-  type StrategyAction = [boolean, () => void];
-
-  /** 选项数据 */
-  type OptionWithKey<K> = { value: K; label: string };
-
-  type Lazy<T> = () => Promise<T>;
+interface ImportMeta {
+  readonly env: Env.ImportMeta;
 }
 
-/** 构建时间 */
-declare const PROJECT_BUILD_TIME: string;
+/** Build time of the project */
+declare const BUILD_TIME: string;
 
-declare type Recordable<T = any> = Record<string, T>;
+type Nullable<T> = T | null;
+type Recordable<T = any> = Record<string, T>;
+
+type Lazy<T> = () => Promise<T>;
+declare interface Fn<T = any, R = T> {
+  (...arg: T[]): R;
+}
+
+declare interface PromiseFn<T = any, R = T> {
+  (...arg: T[]): Promise<R>;
+}
+
+type AnyFunction<T> = (...args: any[]) => T;

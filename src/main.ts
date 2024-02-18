@@ -1,37 +1,28 @@
 import { createApp } from 'vue';
-import App from './App.vue';
-import AppLoading from './components/common/app-loading.vue';
-import { setupDirectives } from './directives';
-import { setupRouter } from './router';
-import { setupAssets } from './plugins';
+import './plugins/assets';
+import { setupDayjs, setupIconifyOffline, setupLoading, setupNProgress } from './plugins';
 import { setupStore } from './store';
+import { setupRouter } from './router';
 import { setupI18n } from './locales';
+import App from './App.vue';
 
 async function setupApp() {
-  // import assets: js、css
-  setupAssets();
+  setupLoading();
 
-  // app loading
-  const appLoading = createApp(AppLoading);
+  setupNProgress();
 
-  appLoading.mount('#appLoading');
+  setupIconifyOffline();
+
+  setupDayjs();
 
   const app = createApp(App);
 
-  // store plugin: pinia
   setupStore(app);
 
-  // vue custom directives
-  setupDirectives(app);
-
-  // vue router
   await setupRouter(app);
 
   setupI18n(app);
 
-  appLoading.unmount();
-
-  // mount app
   app.mount('#app');
 }
 

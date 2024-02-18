@@ -1,22 +1,14 @@
 import type { PluginOption } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
-import unocss from '@unocss/vite';
-import progress from 'vite-plugin-progress';
 import VueDevtools from 'vite-plugin-vue-devtools';
-import { webUpdateNotice } from '@plugin-web-update-notification/vite';
-import unplugin from './unplugin';
-import mock from './mock';
-import visualizer from './visualizer';
-import compress from './compress';
-import pwa from './pwa';
+import progress from 'vite-plugin-progress';
 
-/**
- * vite插件
- * @param viteEnv - 环境变量配置
- */
-export function setupVitePlugins(viteEnv: ImportMetaEnv): (PluginOption | PluginOption[])[] {
-  const plugins = [
+import { setupUnocss } from './unocss';
+import { setupUnplugin } from './unplugin';
+
+export function setupVitePlugins(viteEnv: Env.ImportMeta) {
+  const plugins: PluginOption = [
     vue({
       script: {
         defineModel: true
@@ -24,30 +16,10 @@ export function setupVitePlugins(viteEnv: ImportMetaEnv): (PluginOption | Plugin
     }),
     vueJsx(),
     VueDevtools(),
-    ...unplugin(viteEnv),
-    unocss(),
-    mock(viteEnv),
-    progress(),
-    webUpdateNotice({
-      notificationProps: {
-        title: '👋 有新版本了',
-        description: '点击刷新页面获取最新版本',
-        buttonText: '刷新',
-        dismissButtonText: '忽略'
-      },
-      logVersion: true
-    })
+    setupUnocss(viteEnv),
+    ...setupUnplugin(viteEnv),
+    progress()
   ];
-
-  if (viteEnv.VITE_VISUALIZER === 'Y') {
-    plugins.push(visualizer as PluginOption);
-  }
-  if (viteEnv.VITE_COMPRESS === 'Y') {
-    plugins.push(compress(viteEnv));
-  }
-  if (viteEnv.VITE_PWA === 'Y' || viteEnv.VITE_VERCEL === 'Y') {
-    plugins.push(pwa());
-  }
 
   return plugins;
 }
