@@ -14,7 +14,7 @@ defineOptions({
 const authStore = useAuthStore();
 
 const { formRef, validate } = useNaiveForm();
-const { constantRules } = useFormRules();
+const { formRules } = useFormRules();
 
 interface FormModel {
   userName: string;
@@ -29,8 +29,8 @@ const { setLoginState, getLoginState } = useLoginState();
 const show = computed(() => unref(getLoginState) === LoginStateEnum.LOGIN);
 
 const rules: Record<keyof FormModel, App.Global.FormRule[]> = {
-  userName: constantRules.userName,
-  password: constantRules.pwd
+  userName: formRules.userName,
+  password: formRules.pwd
 };
 
 async function handleSubmit() {
@@ -65,7 +65,7 @@ async function handleSubmit() {
         <!--     @click="setLoginState(LoginStateEnum.RESET_PASSWORD)" -->
         <NButton quaternary>{{ $t('page.login.pwdLogin.forgetPassword') }}</NButton>
       </div>
-      <NButton type="primary" size="large" block round :loading="authStore.loginLoading" @click="handleSubmit">
+      <NButton type="primary" size="large" round block :loading="authStore.loginLoading" @click="handleSubmit">
         {{ $t('common.confirm') }}
       </NButton>
       <div class="flex-y-center justify-between gap-12px">

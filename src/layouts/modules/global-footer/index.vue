@@ -5,7 +5,7 @@ defineOptions({
 </script>
 
 <template>
-  <DarkModeContainer class="h-full"></DarkModeContainer>
+  <DarkModeContainer class="h-full flex-center">Copyright MIT © 2024</DarkModeContainer>
 </template>
 
 <style scoped></style>

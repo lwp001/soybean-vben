@@ -1,14 +1,13 @@
 import { BACKEND_ERROR_CODE, createFlatRequest, createRequest } from '@sa/axios';
 import { localStg } from '@/utils/storage';
-import { createProxyPattern, createServiceConfig } from '../../../env.config';
+import { getServiceBaseURL } from '@/utils/service';
 
-const { baseURL, otherBaseURL } = createServiceConfig(import.meta.env);
-
-const isHttpProxy = import.meta.env.VITE_HTTP_PROXY === 'Y';
+const isHttpProxy = import.meta.env.DEV && import.meta.env.VITE_HTTP_PROXY === 'Y';
+const { baseURL, otherBaseURL } = getServiceBaseURL(import.meta.env, isHttpProxy);
 
 export const request = createFlatRequest<App.Service.Response>(
   {
-    baseURL: isHttpProxy ? createProxyPattern() : baseURL,
+    baseURL,
     headers: {
       apifoxToken: 'XL299LiMEDZ0H5h3A29PxwQXdMJqWyY2'
     }
@@ -31,7 +30,7 @@ export const request = createFlatRequest<App.Service.Response>(
     },
     async onBackendFail(_response) {
       // when the backend response code is not "0000", it means the request is fail
-      // for example: the token is expired, refetch token and retry request
+      // for example: the token is expired, refresh token and retry request
     },
     transformBackendResponse(response) {
       return response.data.data;
@@ -53,7 +52,7 @@ export const request = createFlatRequest<App.Service.Response>(
 
 export const demoRequest = createRequest<App.Service.DemoResponse>(
   {
-    baseURL: isHttpProxy ? createProxyPattern('demo') : otherBaseURL.demo
+    baseURL: otherBaseURL.demo
   },
   {
     async onRequest(config) {
@@ -73,7 +72,7 @@ export const demoRequest = createRequest<App.Service.DemoResponse>(
     },
     async onBackendFail(_response) {
       // when the backend response code is not "200", it means the request is fail
-      // for example: the token is expired, refetch token and retry request
+      // for example: the token is expired, refresh token and retry request
     },
     transformBackendResponse(response) {
       return response.data.result;

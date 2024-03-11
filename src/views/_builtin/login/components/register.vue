@@ -25,10 +25,10 @@ const getShow = computed(() => unref(getLoginState) === LoginStateEnum.REGISTER)
         <NInput :placeholder="$t('page.login.common.codePlaceholder')" />
       </NFormItem>
       <NSpace vertical :size="18" class="w-full">
-        <NButton type="primary" size="large" block round>
+        <NButton type="primary" size="large" round block>
           {{ $t('common.confirm') }}
         </NButton>
-        <NButton size="large" block round @click="handleBackLogin">
+        <NButton size="large" round block @click="handleBackLogin">
           {{ $t('page.login.common.back') }}
         </NButton>
       </NSpace>
