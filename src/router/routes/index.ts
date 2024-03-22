@@ -1,6 +1,6 @@
 import type { RouteRecordItem } from '@/router/types';
 
-import { PAGE_NOT_FOUND_ROUTE } from '@/router/routes/basic';
+import { PAGE_403_ROUTE, PAGE_NOT_FOUND_ROUTE } from '@/router/routes/basic';
 
 import { mainOutRoutes } from './mainOut';
 
@@ -20,7 +20,7 @@ export const asyncRoutes = [PAGE_NOT_FOUND_ROUTE, ...routeModuleList];
 // 根路由
 export const RootRoute: RouteRecordItem = {
   path: '/',
-  name: 'Root',
+  name: 'root',
   redirect: '/home',
   meta: {
     title: 'Root'
@@ -39,4 +39,4 @@ export const LoginRoute: RouteRecordItem = {
 
 // Basic routing without permission
 // 未经许可的基本路由
-export const basicRoutes = [LoginRoute, RootRoute, ...mainOutRoutes, PAGE_NOT_FOUND_ROUTE];
+export const basicRoutes = [LoginRoute, RootRoute, ...mainOutRoutes, PAGE_403_ROUTE, PAGE_NOT_FOUND_ROUTE];

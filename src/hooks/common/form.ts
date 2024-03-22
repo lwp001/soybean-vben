@@ -10,6 +10,11 @@ export function useFormRules() {
       message: $t('form.userName.invalid'),
       trigger: 'change'
     },
+    account: {
+      pattern: REG_USER_NAME,
+      message: $t('form.account.invalid'),
+      trigger: 'change'
+    },
     phone: {
       pattern: REG_PHONE,
       message: $t('form.phone.invalid'),
@@ -34,6 +39,7 @@ export function useFormRules() {
 
   const formRules = {
     userName: [createRequiredRule($t('form.userName.required')), patternRules.userName],
+    account: [createRequiredRule($t('form.account.required')), patternRules.account],
     phone: [createRequiredRule($t('form.phone.required')), patternRules.phone],
     pwd: [createRequiredRule($t('form.pwd.required')), patternRules.pwd],
     code: [createRequiredRule($t('form.code.required')), patternRules.code],

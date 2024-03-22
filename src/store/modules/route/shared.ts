@@ -32,7 +32,14 @@ function filterAuthRouteByRoles(route: RouteRecordItem, roles: string[]) {
 
   // if the route's "roles" is empty, then it is allowed to access
   if (!routeRoles.length) {
-    return [route];
+    if (route.children === undefined || route.children.length === 0) {
+      return [route];
+    }
+    const filterRoute = { ...route };
+    filterRoute.children = filterRoute.children!.flatMap(item =>
+      filterAuthRouteByRoles(item as RouteRecordItem, roles)
+    );
+    return [filterRoute];
   }
 
   // if the user's role is included in the route's "roles", then it is allowed to access

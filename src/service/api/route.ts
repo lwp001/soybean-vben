@@ -22,9 +22,9 @@ export function fetchIsRouteExist(routeName: string, example: '0' | '1' = '0') {
 
 /** get menu list */
 export function fetchGetMenuList() {
-  // return request<Menu[]>({
-  //   url: '/systemManage/getMenuList',
-  //   method: 'get'
-  // });
-  return [];
+  return request<Menu[]>({
+    url: '/systemManage/getMenuList',
+    method: 'get'
+  });
+  // return [] as Menu[];
 }

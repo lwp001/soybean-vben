@@ -148,6 +148,7 @@ const local: App.I18n.Schema = {
       common: {
         loginOrRegister: '登录 / 注册',
         userNamePlaceholder: '请输入用户名',
+        accountPlaceholder: '请输入账户名',
         phonePlaceholder: '请输入手机号',
         codePlaceholder: '请输入验证码',
         passwordPlaceholder: '请输入密码',
@@ -341,6 +342,10 @@ const local: App.I18n.Schema = {
     userName: {
       required: '请输入用户名',
       invalid: '用户名格式不正确'
+    },
+    account: {
+      required: '请输入账号名',
+      invalid: '账户名格式不正确'
     },
     phone: {
       required: '请输入手机号',

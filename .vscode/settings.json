@@ -14,5 +14,6 @@
   "i18n-ally.localesPaths": ["src/locales/langs"],
   "prettier.enable": false,
   "unocss.root": ["./"],
+  "typescript.tsdk": "node_modules/typescript/lib",
   "cSpell.ignoreWords": ["unocss", "nprogress", "typecheck", "iconify", "vueuse", "pinia", "unplugin", "soybeanjs"]
 }

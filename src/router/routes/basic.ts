@@ -1,6 +1,6 @@
 import type { RouteRecordItem } from '@/router/types';
 
-import { BlankLayout, PAGE_NOT_FOUND_NAME } from '@/router/constant';
+import { BaseLayout, BlankLayout, PAGE_NOT_FOUND_NAME } from '@/router/constant';
 
 // 404 on a page
 export const PAGE_NOT_FOUND_ROUTE: RouteRecordItem = {
@@ -21,6 +21,32 @@ export const PAGE_NOT_FOUND_ROUTE: RouteRecordItem = {
       meta: {
         title: '404',
         i18nKey: 'route.404',
+        hideBreadcrumb: true,
+        hideMenu: true
+      }
+    }
+  ]
+};
+
+// 403 on a page
+export const PAGE_403_ROUTE: RouteRecordItem = {
+  path: '/403',
+  name: '403',
+  component: BaseLayout,
+  meta: {
+    title: '403',
+    i18nKey: 'route.403',
+    hideBreadcrumb: true,
+    hideMenu: true
+  },
+  children: [
+    {
+      path: '/403',
+      name: '403',
+      component: () => import('@/views/_builtin/403/index.vue'),
+      meta: {
+        title: '403',
+        i18nKey: 'route.403',
         hideBreadcrumb: true,
         hideMenu: true
       }

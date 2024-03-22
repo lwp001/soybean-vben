@@ -26,7 +26,7 @@ export const request = createFlatRequest<App.Service.Response>(
     isBackendSuccess(response) {
       // when the backend response code is "0000", it means the request is success
       // you can change this logic by yourself
-      return response.data.code === '0000';
+      return response.data.code === 200;
     },
     async onBackendFail(_response) {
       // when the backend response code is not "0000", it means the request is fail

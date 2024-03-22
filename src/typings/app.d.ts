@@ -328,6 +328,7 @@ declare namespace App {
           common: {
             loginOrRegister: string;
             userNamePlaceholder: string;
+            accountPlaceholder: string;
             phonePlaceholder: string;
             codePlaceholder: string;
             passwordPlaceholder: string;
@@ -519,6 +520,7 @@ declare namespace App {
       form: {
         required: string;
         userName: FormMsg;
+        account: FormMsg;
         phone: FormMsg;
         pwd: FormMsg;
         code: FormMsg;
@@ -591,9 +593,9 @@ declare namespace App {
     /** The backend service response data */
     type Response<T = unknown> = {
       /** The backend service response code */
-      code: string;
+      code: number;
       /** The backend service response message */
-      msg: string;
+      msg?: string;
       /** The backend service response data */
       data: T;
     };

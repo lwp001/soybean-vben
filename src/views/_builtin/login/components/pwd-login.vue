@@ -17,25 +17,25 @@ const { formRef, validate } = useNaiveForm();
 const { formRules } = useFormRules();
 
 interface FormModel {
-  userName: string;
+  account: string;
   password: string;
 }
 
 const model: FormModel = reactive({
-  userName: 'Soybean',
-  password: '123456'
+  account: 'soybean',
+  password: 'fc-13579'
 });
 const { setLoginState, getLoginState } = useLoginState();
 const show = computed(() => unref(getLoginState) === LoginStateEnum.LOGIN);
 
 const rules: Record<keyof FormModel, App.Global.FormRule[]> = {
-  userName: formRules.userName,
+  account: formRules.account,
   password: formRules.pwd
 };
 
 async function handleSubmit() {
   await validate();
-  await authStore.login(model.userName, model.password);
+  await authStore.login(model.account, model.password);
 }
 </script>
 
@@ -49,13 +49,14 @@ async function handleSubmit() {
     :show-label="false"
     @keyup.enter="handleSubmit"
   >
-    <NFormItem path="userName">
-      <NInput v-model:value="model.userName" :placeholder="$t('page.login.common.userNamePlaceholder')" autofocus />
+    <NFormItem path="account">
+      <NInput v-model:value="model.account" :placeholder="$t('page.login.common.accountPlaceholder')" autofocus />
     </NFormItem>
     <NFormItem path="password">
       <NInput
         v-model:value="model.password"
         type="password"
+        show-password-on="click"
         :placeholder="$t('page.login.common.passwordPlaceholder')"
       />
     </NFormItem>

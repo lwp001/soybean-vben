@@ -11,6 +11,7 @@ const manage: RouteRecordItem = {
     i18nKey: 'route.manage',
     icon: 'carbon:cloud-service-management',
     title: 'manage'
+    // roles: ['R_ADMIN']
   },
   children: [
     {
