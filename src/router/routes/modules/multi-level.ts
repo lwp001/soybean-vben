@@ -1,7 +1,7 @@
 import type { RouteRecordItem } from '@/router/types';
 import { BaseLayout, getParentLayout } from '@/router/constant';
 
-const permission: RouteRecordItem = {
+const multi: RouteRecordItem = {
   path: '/multi-menu',
   name: 'multi-menu',
   component: BaseLayout,
@@ -18,6 +18,7 @@ const permission: RouteRecordItem = {
       name: 'multi-menu_first',
       path: '/multi-menu/first',
       component: getParentLayout('multi-menu_first'),
+      redirect: '/multi-menu/first/child',
       meta: {
         title: 'multi-menu_first',
         i18nKey: 'route.multi-menu_first',
@@ -39,6 +40,7 @@ const permission: RouteRecordItem = {
       name: 'multi-menu_second',
       path: '/multi-menu/second',
       component: getParentLayout('multi-menu_second'),
+      redirect: '/multi-menu/second/child',
       meta: {
         title: 'multi-menu_second',
         i18nKey: 'route.multi-menu_second',
@@ -49,6 +51,7 @@ const permission: RouteRecordItem = {
           name: 'multi-menu_second_child',
           path: '/multi-menu/second/child',
           component: getParentLayout('multi-menu_second_child'),
+          redirect: '/multi-menu/second/child/home',
           meta: {
             title: 'multi-menu_second_child',
             i18nKey: 'route.multi-menu_second_child'
@@ -70,4 +73,4 @@ const permission: RouteRecordItem = {
   ]
 };
 
-export default permission;
+export default multi;

@@ -1,23 +1,25 @@
-import type { RouteLocationNormalizedLoaded, RouteRecordRaw, _RouteRecordBase } from 'vue-router';
-import { useSvgIconRender } from '@sa/hooks';
-import type { RouteRecordItem } from '@/router/types';
+import type {
+  RouteLocationNormalizedLoaded,
+  RouteRecordNormalized,
+  RouteRecordRaw,
+  Router,
+  _RouteRecordBase
+} from 'vue-router';
+import { cloneDeep, omit } from 'lodash-es';
+import { createRouter, createWebHashHistory } from 'vue-router';
+
 import { $t } from '@/locales';
-import SvgIcon from '@/components/custom/svg-icon.vue';
+import { useSvgIcon } from '@/hooks/common/icon';
+import type { RouteRecordItem } from '@/router/types';
+import { BaseLayout, BlankLayout, EXCEPTION_COMPONENT, IFRAME, getParentLayout } from '@/router/constant';
 
 /**
- * Filter auth routes by roles 根据权限过滤路由
+ * Filter auth routes by roles
  *
  * @param routes Auth routes
  * @param roles Roles
  */
 export function filterAuthRoutesByRoles(routes: RouteRecordItem[], roles: string[]) {
-  const SUPER_ROLE = 'R_SUPER';
-
-  // if the user is super admin, then it is allowed to access all routes
-  if (roles.includes(SUPER_ROLE)) {
-    return routes;
-  }
-
   return routes.flatMap(route => filterAuthRouteByRoles(route, roles));
 }
 
@@ -31,16 +33,7 @@ function filterAuthRouteByRoles(route: RouteRecordItem, roles: string[]) {
   const routeRoles = (route.meta && route.meta.roles) || [];
 
   // if the route's "roles" is empty, then it is allowed to access
-  if (!routeRoles.length) {
-    if (route.children === undefined || route.children.length === 0) {
-      return [route];
-    }
-    const filterRoute = { ...route };
-    filterRoute.children = filterRoute.children!.flatMap(item =>
-      filterAuthRouteByRoles(item as RouteRecordItem, roles)
-    );
-    return [filterRoute];
-  }
+  const isEmptyRoles = !routeRoles.length;
 
   // if the user's role is included in the route's "roles", then it is allowed to access
   const hasPermission = routeRoles.some(role => roles.includes(role));
@@ -51,7 +44,7 @@ function filterAuthRouteByRoles(route: RouteRecordItem, roles: string[]) {
     filterRoute.children = filterRoute.children.flatMap(item => filterAuthRouteByRoles(item as RouteRecordItem, roles));
   }
 
-  return hasPermission ? [filterRoute] : [];
+  return hasPermission || isEmptyRoles ? [filterRoute] : [];
 }
 
 /**
@@ -81,7 +74,7 @@ export function sortRoutesByOrder(routes: RouteRecordItem[]) {
 }
 
 /**
- * Get global menus by auth routes 需要转换单个路由的菜单模式
+ * Get global menus by auth routes
  *
  * @param routes Auth routes
  */
@@ -89,16 +82,13 @@ export function getGlobalMenusByAuthRoutes(routes: RouteRecordItem[]) {
   const menus: App.Global.Menu[] = [];
 
   routes.forEach(route => {
-    if (!route.meta?.hideMenu) {
-      let menu;
-      if (route.meta?.single) {
-        menu = getGlobalMenuByBaseRoute(route.children![0]);
-      } else {
-        menu = getGlobalMenuByBaseRoute(route);
+    if (!route.meta?.hideInMenu) {
+      let menu = getGlobalMenuByBaseRoute(route);
 
-        if (route.children?.length) {
-          menu.children = getGlobalMenusByAuthRoutes(route.children);
-        }
+      if (route.meta.single && (route.children?.length || 0) > 0) {
+        menu = getGlobalMenuByBaseRoute(route.children![0]);
+      } else if (route.children?.some(child => !child.meta?.hideInMenu)) {
+        menu.children = getGlobalMenusByAuthRoutes(route.children);
       }
 
       menus.push(menu);
@@ -137,12 +127,12 @@ export function updateLocaleOfGlobalMenus(menus: App.Global.Menu[]) {
 }
 
 /**
- * Get global menu by route 从路由提取菜单
+ * Get global menu by route
  *
  * @param route
  */
 function getGlobalMenuByBaseRoute(route: RouteLocationNormalizedLoaded | RouteRecordItem) {
-  const { SvgIconVNode } = useSvgIconRender(SvgIcon);
+  const { SvgIconVNode } = useSvgIcon();
 
   const { name, path } = route;
   const { title, i18nKey, icon = import.meta.env.VITE_MENU_ICON, localIcon } = route.meta ?? {};
@@ -179,36 +169,6 @@ export function getCacheRouteNames(routes: RouteRecordRaw[]) {
   });
 
   return cacheNames;
-}
-
-/**
- * Is route exist by route path
- *
- * @param routePath
- * @param routes
- */
-export function isRouteExistByRouteName(routePath: string, routes: RouteRecordItem[]) {
-  return routes.some(route => recursiveGetIsRouteExistByRouteName(route, routePath));
-}
-
-/**
- * Recursive get is route exist by route name
- *
- * @param route
- * @param routePath
- */
-function recursiveGetIsRouteExistByRouteName(route: RouteRecordItem, routePath: string): boolean {
-  let isExist = route.path === routePath;
-
-  if (isExist) {
-    return true;
-  }
-
-  if (route.children && route.children.length) {
-    isExist = route.children.some(item => recursiveGetIsRouteExistByRouteName(item as RouteRecordItem, routePath));
-  }
-
-  return isExist;
 }
 
 /**
@@ -291,7 +251,7 @@ function transformMenuToBreadcrumb(menu: App.Global.Menu) {
 }
 
 /**
- * Get breadcrumbs by route 从路由获取面包屑
+ * Get breadcrumbs by route
  *
  * @param route
  * @param menus
@@ -300,7 +260,6 @@ export function getBreadcrumbsByRoute(
   route: RouteLocationNormalizedLoaded,
   menus: App.Global.Menu[]
 ): App.Global.Breadcrumb[] {
-  if (route.meta.hideBreadcrumb) return [];
   const key = route.name as string;
   const activeKey = route.meta?.activeMenu;
 
@@ -341,4 +300,175 @@ export function transformMenuToSearchMenus(menus: App.Global.Menu[], treeMap: Ap
     }
     return acc;
   }, treeMap);
+}
+
+/** Convert multi-level routing to level 2 routing 将多级路由转换为 2 级路由 */
+export function flatMultiLevelRoutes(routeModules: RouteRecordItem[]) {
+  const modules: RouteRecordItem[] = cloneDeep(routeModules);
+
+  for (let index = 0; index < modules.length; index += 1) {
+    const routeModule = modules[index];
+    // 判断级别是否 多级 路由
+    if (isMultipleRoute(routeModule)) {
+      // 路由等级提升
+      promoteRouteLevel(routeModule);
+    }
+    // 声明终止当前循环， 即跳过此次循环，进行下一轮
+  }
+  return modules;
+}
+
+// Routing level upgrade
+// 路由等级提升
+function promoteRouteLevel(routeModule: RouteRecordItem) {
+  // Use vue-router to splice menus
+  // 使用vue-router拼接菜单
+  // createRouter 创建一个可以被 Vue 应用程序使用的路由实例
+  let router: Router | null = createRouter({
+    routes: [routeModule as unknown as RouteRecordNormalized],
+    history: createWebHashHistory()
+  });
+  // getRoutes： 获取所有 路由记录的完整列表。
+  const routes = router.getRoutes();
+  // 将所有子路由添加到二级路由
+  addToChildren(routes, routeModule.children || [], routeModule);
+  router = null;
+
+  // omit lodash的函数 对传入的item对象的children进行删除
+  routeModule.children = routeModule.children?.map(item => omit(item, 'children')) as RouteRecordItem[];
+}
+
+// Add all sub-routes to the secondary route
+// 将所有子路由添加到二级路由
+function addToChildren(routes: RouteRecordNormalized[], children: RouteRecordItem[], routeModule: RouteRecordItem) {
+  for (let index = 0; index < children.length; index += 1) {
+    const child = children[index];
+    const route = routes.find(item => item.name === child.name);
+    // if (!route) {
+    //   continue;
+    // }
+    if (route) {
+      // routeModule.children = routeModule.children || [];
+      routeModule.children ||= [];
+      if (!routeModule.children.find(item => item.name === route.name)) {
+        routeModule.children?.push(route as unknown as RouteRecordItem);
+      }
+      if (child.children?.length) {
+        addToChildren(routes, child.children, routeModule);
+      }
+    }
+  }
+}
+
+// Determine whether the level exceeds 2 levels
+// 判断级别是否超过2级
+function isMultipleRoute(routeModule: RouteRecordItem) {
+  // Reflect.has 与 in 操作符 相同, 用于检查一个对象(包括它原型链上)是否拥有某个属性
+  if (!routeModule || !Reflect.has(routeModule, 'children') || !routeModule.children?.length) {
+    return false;
+  }
+
+  const children = routeModule.children;
+
+  let flag = false;
+  for (let index = 0; index < children.length; index += 1) {
+    const child = children[index];
+    if (child.children?.length) {
+      flag = true;
+      break;
+    }
+  }
+  return flag;
+}
+
+const LayoutMap = new Map<string, () => Promise<typeof import('*.vue')>>();
+
+LayoutMap.set('BASE', BaseLayout);
+LayoutMap.set('BLANK', BlankLayout);
+LayoutMap.set('IFRAME', IFRAME);
+
+let dynamicViewsModules: Record<string, () => Promise<Recordable>>;
+type Fn = () => Promise<Recordable>;
+
+// Dynamic introduction
+function asyncImportRoute(routes: RouteRecordItem[] | undefined) {
+  dynamicViewsModules ||= import.meta.glob('../../../views/**/*.{vue,tsx}');
+
+  if (!routes) return;
+  routes.forEach(item => {
+    if (!item.component && item.meta?.frameSrc) {
+      item.component = 'IFRAME';
+    }
+    const { component, name } = item;
+    const { children } = item;
+    if (component) {
+      const layoutFound = LayoutMap.get((component as string).toUpperCase());
+      if (layoutFound) {
+        item.component = layoutFound;
+      } else {
+        item.component = dynamicImport(dynamicViewsModules, component as string);
+      }
+    } else if (name) {
+      item.component = getParentLayout();
+    }
+    children && asyncImportRoute(children);
+  });
+}
+
+function dynamicImport(viewsModules: Record<string, () => Promise<Recordable>>, component: string): Fn | undefined {
+  const keys = Object.keys(viewsModules);
+  const matchKeys = keys.filter(key => {
+    const k = key.replace('../../../views', '');
+    const startFlag = component.startsWith('/');
+    const endFlag = component.endsWith('.vue') || component.endsWith('.tsx');
+    const startIndex = startFlag ? 0 : 1;
+    const lastIndex = endFlag ? k.length : k.lastIndexOf('.');
+
+    return k.substring(startIndex, lastIndex) === component;
+  });
+  if (matchKeys?.length === 1) {
+    const matchKey = matchKeys[0];
+    return viewsModules[matchKey];
+  } else if (matchKeys?.length > 1) {
+    console.warn(
+      'Please do not create `.vue` and `.TSX` files with the same file name in the same hierarchical directory under the views folder. This will cause dynamic introduction failure'
+    );
+    return undefined;
+  }
+  console.warn(`在src/views/下找不到\`${component}.vue\` 或 \`${component}.tsx\`, 请自行创建!`);
+  return EXCEPTION_COMPONENT;
+}
+
+// Turn background objects into routing objects
+// 将背景对象变成路由对象
+export function transformObjToRoute<T = RouteRecordItem>(routeList: RouteRecordItem[]): T[] {
+  routeList.forEach(route => {
+    const component = route.component as string;
+
+    if (component) {
+      if (component.toUpperCase() === 'BASE') {
+        route.component = LayoutMap.get(component.toUpperCase());
+      } else {
+        route.children = [cloneDeep(route)];
+        route.component = BaseLayout;
+
+        // 某些情况下如果name如果没有值， 多个一级路由菜单会导致页面404
+        if (!route.name) {
+          console.warn(`找不到菜单对应的name, 请检查数据!${JSON.stringify(route)}`);
+        }
+        route.name = `${route.name}Parent`;
+        // 重定向到当前路由，以防空白页面
+        route.redirect = route.path;
+        route.path = '';
+        const meta = route.meta || {};
+        meta.single = true;
+        meta.affix = false;
+        route.meta = meta;
+      }
+    } else {
+      console.warn(`请正确配置路由：${route?.name}的component属性`);
+    }
+    route.children && asyncImportRoute(route.children);
+  });
+  return routeList as unknown as T[];
 }

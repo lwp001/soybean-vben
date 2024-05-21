@@ -8,10 +8,10 @@ import { request } from '../request';
  */
 export function fetchLogin(userName: string, password: string) {
   return request<Api.Auth.LoginToken>({
-    url: '/login',
+    url: '/auth/login',
     method: 'post',
     data: {
-      account: userName,
+      userName,
       password
     }
   });
@@ -19,7 +19,7 @@ export function fetchLogin(userName: string, password: string) {
 
 /** Get user info */
 export function fetchGetUserInfo() {
-  return request<Api.Auth.UserInfo>({ url: '/login/user_info' });
+  return request<Api.Auth.UserInfo>({ url: '/auth/getUserInfo' });
 }
 
 /**
@@ -37,13 +37,12 @@ export function fetchRefreshToken(refreshToken: string) {
   });
 }
 
-export function fetchDebug() {
-  return request<string>({
-    url: '/debug-post',
-    method: 'post',
-    headers: { 'content-type': 'application/x-www-form-urlencoded' },
-    data: {
-      a: '1'
-    }
-  });
+/**
+ * return custom backend error
+ *
+ * @param code error code
+ * @param msg error message
+ */
+export function fetchCustomBackendError(code: string, msg: string) {
+  return request({ url: '/auth/error', params: { code, msg } });
 }

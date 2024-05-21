@@ -1,4 +1,5 @@
 import { computed, reactive, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import { defineStore } from 'pinia';
 import { useLoading } from '@sa/hooks';
 import { SetupStoreId } from '@/enum';
@@ -10,6 +11,7 @@ import { useRouteStore } from '../route';
 import { clearAuthStorage, getToken, getUserInfo } from './shared';
 
 export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
+  const route = useRoute();
   const routeStore = useRouteStore();
   const { toLogin, redirectFromLogin } = useRouterPush(false);
   const { loading: loginLoading, startLoading, endLoading } = useLoading();
@@ -17,6 +19,14 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   const token = ref(getToken());
 
   const userInfo: Api.Auth.UserInfo = reactive(getUserInfo());
+
+  /** is super role in static route */
+  const isStaticSuper = computed(() => {
+    const { VITE_AUTH_ROUTE_MODE, VITE_STATIC_SUPER_ROLE } = import.meta.env;
+
+    // return VITE_AUTH_ROUTE_MODE === 'static' &&
+    return userInfo.roles.includes(VITE_STATIC_SUPER_ROLE);
+  });
 
   /** Is login */
   const isLogin = computed(() => Boolean(token.value));
@@ -29,7 +39,9 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
 
     authStore.$reset();
 
-    await toLogin();
+    if (!route.meta.constant) {
+      await toLogin();
+    }
 
     routeStore.resetStore();
   }
@@ -39,8 +51,9 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
    *
    * @param userName User name
    * @param password Password
+   * @param [redirect=true] Whether to redirect after login. Default is `true`
    */
-  async function login(userName: string, password: string) {
+  async function login(userName: string, password: string, redirect = true) {
     startLoading();
 
     const { data: loginToken, error } = await fetchLogin(userName, password);
@@ -49,11 +62,13 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
       const pass = await loginByToken(loginToken);
 
       if (pass) {
-        await routeStore.initAuthRoute();
+        await routeStore.initRoute();
 
-        await redirectFromLogin();
+        if (redirect) {
+          await redirectFromLogin();
+        }
 
-        if (routeStore.isInitAuthRoute) {
+        if (routeStore.isInitRoute) {
           window.$notification?.success({
             title: $t('page.login.common.loginSuccess'),
             content: $t('page.login.common.welcomeBack', { userName: userInfo.userName }),
@@ -79,7 +94,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
       // 2. store user info
       localStg.set('userInfo', info);
 
-      // 3. update auth route
+      // 3. update store
       token.value = loginToken.token;
       Object.assign(userInfo, info);
 
@@ -92,6 +107,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   return {
     token,
     userInfo,
+    isStaticSuper,
     isLogin,
     loginLoading,
     resetStore,

@@ -5,11 +5,13 @@ import { useEventListener } from '@vueuse/core';
 import { SetupStoreId } from '@/enum';
 import { useRouterPush } from '@/hooks/common/router';
 import { localStg } from '@/utils/storage';
+import { useRouteStore } from '@/store/modules/route';
 import { useThemeStore } from '../theme';
 import {
-  filterTabsByAllRoutes,
+  extractTabsByAllRoutes,
   filterTabsById,
   filterTabsByIds,
+  findTabByRouteName,
   getAllTabs,
   getDefaultHomeTab,
   getFixedTabIds,
@@ -21,6 +23,7 @@ import {
 
 export const useTabStore = defineStore(SetupStoreId.Tab, () => {
   const router = useRouter();
+  const routeStore = useRouteStore();
   const themeStore = useThemeStore();
   const { routerPush } = useRouterPush(false);
 
@@ -30,13 +33,9 @@ export const useTabStore = defineStore(SetupStoreId.Tab, () => {
   /** Get active tab */
   const homeTab = ref<App.Global.Tab>();
 
-  /**
-   * Init home tab
-   *
-   * @param router Router instance
-   */
+  /** Init home tab */
   function initHomeTab() {
-    homeTab.value = getDefaultHomeTab(router);
+    homeTab.value = getDefaultHomeTab(router, routeStore.routeHome);
   }
 
   /** Get all tabs */
@@ -63,8 +62,8 @@ export const useTabStore = defineStore(SetupStoreId.Tab, () => {
     const storageTabs = localStg.get('globalTabs');
 
     if (themeStore.tab.cache && storageTabs) {
-      const filteredTabs = filterTabsByAllRoutes(router, storageTabs);
-      tabs.value = updateTabsByI18nKey(filteredTabs);
+      const extractedTabs = extractTabsByAllRoutes(router, storageTabs);
+      tabs.value = updateTabsByI18nKey(extractedTabs);
     }
 
     addTab(currentRoute);
@@ -114,6 +113,23 @@ export const useTabStore = defineStore(SetupStoreId.Tab, () => {
       await switchRouteByTab(activeTab);
       update();
     }
+  }
+
+  /** remove active tab */
+  async function removeActiveTab() {
+    await removeTab(activeTabId.value);
+  }
+
+  /**
+   * remove tab by route name
+   *
+   * @param routeName route name
+   */
+  async function removeTabByRouteName(routeName: string) {
+    const tab = findTabByRouteName(routeName, tabs.value);
+    if (!tab) return;
+
+    await removeTab(tab.id);
   }
 
   /**
@@ -202,6 +218,7 @@ export const useTabStore = defineStore(SetupStoreId.Tab, () => {
     const tab = tabs.value.find(item => item.id === id);
     if (!tab) return;
 
+    tab.oldLabel = tab.label;
     tab.newLabel = label;
   }
 
@@ -262,6 +279,8 @@ export const useTabStore = defineStore(SetupStoreId.Tab, () => {
     initTabStore,
     addTab,
     removeTab,
+    removeActiveTab,
+    removeTabByRouteName,
     clearTabs,
     clearLeftTabs,
     clearRightTabs,

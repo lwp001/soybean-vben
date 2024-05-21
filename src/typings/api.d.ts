@@ -46,9 +46,9 @@ declare namespace Api {
   }
 
   /**
-   * Namespace Auth
+   * namespace Auth
    *
-   * Backend api module: "auth"
+   * backend api module: "auth"
    */
   namespace Auth {
     interface LoginToken {
@@ -60,24 +60,25 @@ declare namespace Api {
       userId: string;
       userName: string;
       roles: string[];
+      buttons: string[];
     }
   }
 
   /**
-   * Namespace Route
+   * namespace Route
    *
-   * Backend api module: "route"
+   * backend api module: "route"
    */
   namespace Route {
-    type GeneratedRoute = import('../router/types').RouteRecordItem;
+    type ElegantConstRoute = import('@/router/types').RouteRecordItem;
 
-    type MenuRoute = GeneratedRoute & {
+    type MenuRoute = ElegantConstRoute & {
       id: string;
     };
 
     interface UserRoute {
       routes: MenuRoute[];
-      home: GeneratedRoute;
+      home: string;
     }
   }
 
@@ -170,6 +171,20 @@ declare namespace Api {
      */
     type IconType = '1' | '2';
 
+    type MenuPropsOfRoute = Pick<
+      import('vue-router').RouteMeta,
+      | 'i18nKey'
+      | 'keepAlive'
+      | 'constant'
+      | 'order'
+      | 'href'
+      | 'hideInMenu'
+      | 'activeMenu'
+      | 'multiTab'
+      | 'fixedIndexInTab'
+      | 'query'
+    >;
+
     type Menu = Common.CommonRecord<{
       /** parent menu id */
       parentId: number;
@@ -183,44 +198,25 @@ declare namespace Api {
       routePath: string;
       /** component */
       component?: string;
-      /**
-       * i18n key
-       *
-       * it is for internationalization
-       */
-      i18nKey?: App.I18n.I18nKey;
       /** iconify icon name or local icon name */
       icon: string;
       /** icon type */
       iconType: IconType;
-      /** menu order */
-      order: number;
-      /** whether to cache the route */
-      keepAlive?: boolean;
-      /** outer link */
-      href?: string;
-      /** whether to hide the route in the menu */
-      hideInMenu?: boolean;
-      /**
-       * The menu key will be activated when entering the route
-       *
-       * The route is not in the menu
-       *
-       * @example
-       *   the route is "user_detail", if it is set to "user_list", the menu "user_list" will be activated
-       */
-      activeMenu?: string;
-      /** By default, the same route path will use one tab, if set to true, it will use multiple tabs */
-      multiTab?: boolean;
-      /** If set, the route will be fixed in tabs, and the value is the order of fixed tabs */
-      fixedIndexInTab?: number;
-      /** menu buttons */
-      buttons?: MenuButton[];
+      /** buttons */
+      buttons?: MenuButton[] | null;
       /** children menu */
-      children?: Menu[];
-    }>;
+      children?: Menu[] | null;
+    }> &
+      MenuPropsOfRoute;
 
     /** menu list */
     type MenuList = Common.PaginatingQueryRecord<Menu>;
+
+    type MenuTree = {
+      id: number;
+      label: string;
+      pId: number;
+      children?: MenuTree[];
+    };
   }
 }

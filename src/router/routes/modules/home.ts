@@ -4,14 +4,13 @@ import { BaseLayout } from '@/router/constant';
 
 const home: RouteRecordItem = {
   path: '/home',
-  name: 'home_1',
+  name: 'home',
   component: BaseLayout,
   redirect: '/home',
   meta: {
     hideChildrenInMenu: true,
     title: 'home',
     i18nKey: 'route.home',
-
     single: true,
     order: 1
   },

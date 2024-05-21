@@ -9,9 +9,13 @@ interface Props {
   collapsed?: boolean;
   /** Arrow style icon */
   arrowIcon?: boolean;
+  zIndex?: number;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  arrowIcon: false,
+  zIndex: 98
+});
 
 type NumberBool = 0 | 1;
 
@@ -36,7 +40,11 @@ const icon = computed(() => {
 </script>
 
 <template>
-  <ButtonIcon :tooltip-content="collapsed ? $t('icon.expand') : $t('icon.collapse')" tooltip-placement="bottom-start">
+  <ButtonIcon
+    :tooltip-content="collapsed ? $t('icon.expand') : $t('icon.collapse')"
+    tooltip-placement="bottom-start"
+    :z-index="zIndex"
+  >
     <SvgIcon :icon="icon" />
   </ButtonIcon>
 </template>

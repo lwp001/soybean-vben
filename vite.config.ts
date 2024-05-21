@@ -7,6 +7,7 @@ import { createViteProxy } from './build/config';
 
 export default defineConfig(configEnv => {
   const viteEnv = loadEnv(configEnv.mode, process.cwd()) as unknown as Env.ImportMeta;
+
   const buildTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
 
   return {
@@ -26,11 +27,10 @@ export default defineConfig(configEnv => {
     },
     plugins: setupVitePlugins(viteEnv),
     define: {
-      // BUILD_TIME: JSON.stringify(new Date().toISOString())
       BUILD_TIME: JSON.stringify(buildTime)
     },
     server: {
-      host: '127.0.0.1',
+      host: '0.0.0.0',
       port: 9527,
       open: true,
       proxy: createViteProxy(viteEnv, configEnv.command === 'serve'),

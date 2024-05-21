@@ -1,5 +1,6 @@
 import { useRouter } from 'vue-router';
 import type { RouteLocationRaw } from 'vue-router';
+
 import { router as globalRouter } from '@/router';
 
 /**
@@ -36,7 +37,7 @@ export function useRouterPush(inSetup = true) {
     if (params) {
       routeLocation.params = params;
     }
-
+    console.log('route push: ', routeLocation);
     return routerPush(routeLocation);
   }
 
@@ -72,7 +73,6 @@ export function useRouterPush(inSetup = true) {
   }
 
   return {
-    route,
     routerPush,
     routerBack,
     routerPushByKey,

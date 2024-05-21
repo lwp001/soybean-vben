@@ -1,7 +1,6 @@
 const local: App.I18n.Schema = {
   system: {
-    title: 'SoybeanAdmin',
-    Description: 'Enter your personal details and get started!'
+    title: 'SoybeanAdmin'
   },
   common: {
     action: 'Action',
@@ -12,7 +11,9 @@ const local: App.I18n.Schema = {
     cancel: 'Cancel',
     close: 'Close',
     check: 'Check',
+    expandColumn: 'Expand Column',
     columnSetting: 'Column Setting',
+    config: 'Config',
     confirm: 'Confirm',
     delete: 'Delete',
     deleteSuccess: 'Delete Success',
@@ -33,6 +34,7 @@ const local: App.I18n.Schema = {
     search: 'Search',
     switch: 'Switch',
     tip: 'Tip',
+    trigger: 'Trigger',
     update: 'Update',
     updateSuccess: 'Update Success',
     userCenter: 'User Center',
@@ -41,6 +43,14 @@ const local: App.I18n.Schema = {
       no: 'No'
     }
   },
+  request: {
+    logout: 'Logout user after request failed',
+    logoutMsg: 'User status is invalid, please log in again',
+    logoutWithModal: 'Pop up modal after request failed and then log out user',
+    logoutWithModalMsg: 'User status is invalid, please log in again',
+    refreshToken: 'The requested token has expired, refresh the token',
+    tokenExpired: 'The requested token has expired'
+  },
   theme: {
     themeSchema: {
       title: 'Theme Schema',
@@ -48,6 +58,7 @@ const local: App.I18n.Schema = {
       dark: 'Dark',
       auto: 'Follow System'
     },
+    grayscale: 'Grayscale',
     layoutMode: {
       title: 'Layout Mode',
       vertical: 'Vertical Menu Mode',
@@ -55,6 +66,8 @@ const local: App.I18n.Schema = {
       'vertical-mix': 'Vertical Mix Menu Mode',
       'horizontal-mix': 'Horizontal Mix menu Mode'
     },
+    recommendColor: 'Apply Recommended Color Algorithm',
+    recommendColorDesc: 'The recommended color algorithm refers to',
     themeColor: {
       title: 'Theme Color',
       primary: 'Primary',
@@ -128,12 +141,31 @@ const local: App.I18n.Schema = {
     403: 'No Permission',
     404: 'Page Not Found',
     500: 'Server Error',
+    'iframe-page': 'Iframe',
     home: 'Home',
+    document: 'Document',
+    document_project: 'Project Document',
+    'document_project-link': 'Project Document(External Link)',
+    document_vue: 'Vue Document',
+    document_vite: 'Vite Document',
+    document_unocss: 'UnoCSS Document',
+    document_naive: 'Naive UI Document',
+    document_antd: 'Ant Design Vue Document',
     'user-center': 'User Center',
+    about: 'About',
+    function: 'System Function',
+    function_tab: 'Tab',
+    'function_multi-tab': 'Multi Tab',
+    'function_hide-child': 'Hide Child',
+    'function_hide-child_one': 'Hide Child',
+    'function_hide-child_two': 'Two',
+    'function_hide-child_three': 'Three',
+    function_request: 'Request',
+    'function_toggle-auth': 'Toggle Auth',
+    'function_super-page': 'Super Admin Visible',
     manage: 'System Manage',
     manage_user: 'User Manage',
     'manage_user-detail': 'User Detail',
-    about: 'About',
     manage_role: 'Role Manage',
     manage_menu: 'Menu Manage',
     'multi-menu': 'Multi Menu',
@@ -141,19 +173,21 @@ const local: App.I18n.Schema = {
     'multi-menu_first_child': 'Menu One Child',
     'multi-menu_second': 'Menu Two',
     'multi-menu_second_child': 'Menu Two Child',
-    'multi-menu_second_child_home': 'Menu Two Child Home'
+    'multi-menu_second_child_home': 'Menu Two Child Home',
+    exception: 'Exception',
+    exception_403: '403',
+    exception_404: '404',
+    exception_500: '500'
   },
   page: {
     login: {
       common: {
         loginOrRegister: 'Login / Register',
         userNamePlaceholder: 'Please enter user name',
-        accountPlaceholder: 'Please enter account',
         phonePlaceholder: 'Please enter phone number',
         codePlaceholder: 'Please enter verification code',
         passwordPlaceholder: 'Please enter password',
         confirmPasswordPlaceholder: 'Please enter password again',
-        diffPwd: 'The two passwords are inconsistent',
         codeLogin: 'Verification code login',
         confirm: 'Confirm',
         back: 'Back',
@@ -168,35 +202,33 @@ const local: App.I18n.Schema = {
         register: 'Register',
         otherAccountLogin: 'Other Account Login',
         otherLoginMode: 'Other Login Mode',
-        superAdmin: 'Super Administrator',
-        admin: 'Administrator',
-        user: 'Ordinary User'
+        superAdmin: 'Super Admin',
+        admin: 'Admin',
+        user: 'User'
       },
       codeLogin: {
         title: 'Verification Code Login',
         getCode: 'Get verification code',
+        reGetCode: 'Reacquire after {time}s',
+        sendCodeSuccess: 'Verification code sent successfully',
         imageCodePlaceholder: 'Please enter image verification code'
       },
       register: {
         title: 'Register',
         agreement: 'I have read and agree to',
         protocol: '《User Agreement》',
-        policy: '《Privacy Policy》',
-        policyPlaceholder: 'Register after checking'
+        policy: '《Privacy Policy》'
       },
       resetPwd: {
         title: 'Reset Password'
       },
       bindWeChat: {
         title: 'Bind WeChat'
-      },
-      qrSign: {
-        title: 'Qr code sign in'
       }
     },
     about: {
       title: 'About',
-      introduction: `Soybean Admin is an elegant and powerful admin template, based on the latest front-end technology stack, including Vue3, Vite5, TypeScript, Pinia and UnoCSS. It has built-in rich theme configuration and components, strict code specifications, and an automated file routing system. In addition, it also uses the online mock data solution based on ApiFox. Soybean Admin provides you with a one-stop admin solution, no additional configuration, and out of the box. It is also a best practice for learning cutting-edge technologies quickly.`,
+      introduction: `SoybeanAdmin is an elegant and powerful admin template, based on the latest front-end technology stack, including Vue3, Vite5, TypeScript, Pinia and UnoCSS. It has built-in rich theme configuration and components, strict code specifications, and an automated file routing system. In addition, it also uses the online mock data solution based on ApiFox. SoybeanAdmin provides you with a one-stop admin solution, no additional configuration, and out of the box. It is also a best practice for learning cutting-edge technologies quickly.`,
       projectInfo: {
         title: 'Project Info',
         version: 'Version',
@@ -234,6 +266,45 @@ const local: App.I18n.Schema = {
       },
       creativity: 'Creativity'
     },
+    function: {
+      tab: {
+        tabOperate: {
+          title: 'Tab Operation',
+          addTab: 'Add Tab',
+          addTabDesc: 'To about page',
+          closeTab: 'Close Tab',
+          closeCurrentTab: 'Close Current Tab',
+          closeAboutTab: 'Close "About" Tab',
+          addMultiTab: 'Add Multi Tab',
+          addMultiTabDesc1: 'To MultiTab page',
+          addMultiTabDesc2: 'To MultiTab page(with query params)'
+        },
+        tabTitle: {
+          title: 'Tab Title',
+          changeTitle: 'Change Title',
+          change: 'Change',
+          resetTitle: 'Reset Title',
+          reset: 'Reset'
+        }
+      },
+      multiTab: {
+        routeParam: 'Route Param',
+        backTab: 'Back function_tab'
+      },
+      toggleAuth: {
+        toggleAccount: 'Toggle Account',
+        authHook: 'Auth Hook Function `hasAuth`',
+        superAdminVisible: 'Super Admin Visible',
+        adminVisible: 'Admin Visible',
+        adminOrUserVisible: 'Admin and User Visible'
+      },
+      request: {
+        repeatedErrorOccurOnce: 'Repeated Request Error Occurs Once',
+        repeatedError: 'Repeated Request Error',
+        repeatedErrorMsg1: 'Custom Request Error 1',
+        repeatedErrorMsg2: 'Custom Request Error 2'
+      }
+    },
     manage: {
       common: {
         status: {
@@ -247,6 +318,8 @@ const local: App.I18n.Schema = {
         roleCode: 'Role Code',
         roleStatus: 'Role Status',
         roleDesc: 'Role Description',
+        menuAuth: 'Menu Auth',
+        buttonAuth: 'Button Auth',
         form: {
           roleName: 'Please enter role name',
           roleCode: 'Please enter role code',
@@ -282,45 +355,56 @@ const local: App.I18n.Schema = {
         }
       },
       menu: {
+        home: 'Home',
         title: 'Menu List',
+        id: 'ID',
+        parentId: 'Parent ID',
         menuType: 'Menu Type',
         menuName: 'Menu Name',
         routeName: 'Route Name',
         routePath: 'Route Path',
-        page: 'Page Component',
+        pathParam: 'Path Param',
         layout: 'Layout Component',
+        page: 'Page Component',
         i18nKey: 'I18n Key',
         icon: 'Icon',
         localIcon: 'Local Icon',
+        iconTypeTitle: 'Icon Type',
         order: 'Order',
+        constant: 'Constant',
         keepAlive: 'Keep Alive',
         href: 'Href',
         hideInMenu: 'Hide In Menu',
         activeMenu: 'Active Menu',
         multiTab: 'Multi Tab',
         fixedIndexInTab: 'Fixed Index In Tab',
+        query: 'Query Params',
         button: 'Button',
         buttonCode: 'Button Code',
         buttonDesc: 'Button Desc',
         menuStatus: 'Menu Status',
         form: {
+          home: 'Please select home',
           menuType: 'Please select menu type',
           menuName: 'Please enter menu name',
           routeName: 'Please enter route name',
           routePath: 'Please enter route path',
+          pathParam: 'Please enter path param',
           page: 'Please select page component',
           layout: 'Please select layout component',
           i18nKey: 'Please enter i18n key',
-          icon: 'Please enter icon',
-          localIcon: 'Please select local icon',
+          icon: 'Please enter iconify name',
+          localIcon: 'Please enter local icon name',
           order: 'Please enter order',
           keepAlive: 'Please select whether to cache route',
           href: 'Please enter href',
           hideInMenu: 'Please select whether to hide menu',
-          activeMenu: 'Please enter the route name of the highlighted menu',
+          activeMenu: 'Please select route name of the highlighted menu',
           multiTab: 'Please select whether to support multiple tabs',
           fixedInTab: 'Please select whether to fix in the tab',
           fixedIndexInTab: 'Please enter the index fixed in the tab',
+          queryKey: 'Please enter route parameter Key',
+          queryValue: 'Please enter route parameter Value',
           button: 'Please select whether it is a button',
           buttonCode: 'Please enter button code',
           buttonDesc: 'Please enter button description',
@@ -331,8 +415,11 @@ const local: App.I18n.Schema = {
         addChildMenu: 'Add Child Menu',
         type: {
           directory: 'Directory',
-          menu: 'Menu',
-          function: 'Button'
+          menu: 'Menu'
+        },
+        iconType: {
+          iconify: 'Iconify Icon',
+          local: 'Local Icon'
         }
       }
     }
@@ -343,17 +430,17 @@ const local: App.I18n.Schema = {
       required: 'Please enter user name',
       invalid: 'User name format is incorrect'
     },
-    account: {
-      required: 'Please enter account',
-      invalid: 'Account format is incorrect'
-    },
     phone: {
       required: 'Please enter phone number',
       invalid: 'Phone number format is incorrect'
     },
     pwd: {
       required: 'Please enter password',
-      invalid: 'Password format is incorrect'
+      invalid: '6-18 characters, including letters, numbers, and underscores'
+    },
+    confirmPwd: {
+      required: 'Please enter password again',
+      invalid: 'The two passwords are inconsistent'
     },
     code: {
       required: 'Please enter verification code',
@@ -382,6 +469,9 @@ const local: App.I18n.Schema = {
     expand: 'Expand Menu',
     pin: 'Pin',
     unpin: 'Unpin'
+  },
+  datatable: {
+    itemCount: 'Total {total} items'
   }
 };
 

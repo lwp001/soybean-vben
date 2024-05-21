@@ -2,7 +2,7 @@
 declare namespace App {
   /** Theme namespace */
   namespace Theme {
-    type ColorPaletteNumber = import('@sa/color-palette').ColorPaletteNumber;
+    type ColorPaletteNumber = import('@sa/color').ColorPaletteNumber;
 
     /** Theme token */
     type ThemeToken = {
@@ -18,6 +18,10 @@ declare namespace App {
     interface ThemeSetting {
       /** Theme scheme */
       themeScheme: UnionKey.ThemeScheme;
+      /** grayscale mode */
+      grayscale: boolean;
+      /** Whether to recommend color */
+      recommendColor: boolean;
       /** Theme color */
       themeColor: string;
       /** Other color */
@@ -150,7 +154,7 @@ declare namespace App {
       /** The menu label */
       label: string;
       /** The menu i18n key */
-      i18nKey?: I18n.I18nKey;
+      i18nKey?: I18n.I18nKey | null;
       /** The route key */
       routeKey: string;
       /** The route path */
@@ -167,7 +171,7 @@ declare namespace App {
 
     /** Tab route */
     type TabRoute = Pick<RouteLocationNormalizedLoaded, 'name' | 'path' | 'meta'> &
-      Partial<Pick<RouteLocationNormalizedLoaded, 'fullPath' | 'query'>>;
+      Partial<Pick<RouteLocationNormalizedLoaded, 'fullPath' | 'query' | 'matched'>>;
 
     /** The global tab */
     type Tab = {
@@ -181,6 +185,12 @@ declare namespace App {
        * If set, the tab label will be replaced by this value
        */
       newLabel?: string;
+      /**
+       * The old tab label
+       *
+       * when reset the tab label, the tab label will be replaced by this value
+       */
+      oldLabel?: string;
       /** The tab route key */
       routeKey: string;
       /** The tab route path */
@@ -188,7 +198,7 @@ declare namespace App {
       /** The tab route full path */
       fullPath: string;
       /** The tab fixed index */
-      fixedIndex?: number;
+      fixedIndex?: number | null;
       /**
        * Tab icon
        *
@@ -202,7 +212,7 @@ declare namespace App {
        */
       localIcon?: string;
       /** I18n key */
-      i18nKey?: I18n.I18nKey;
+      i18nKey?: I18n.I18nKey | null;
     };
 
     /** Form rule */
@@ -233,7 +243,6 @@ declare namespace App {
     type Schema = {
       system: {
         title: string;
-        Description: string;
       };
       common: {
         action: string;
@@ -244,7 +253,9 @@ declare namespace App {
         cancel: string;
         close: string;
         check: string;
+        expandColumn: string;
         columnSetting: string;
+        config: string;
         confirm: string;
         delete: string;
         deleteSuccess: string;
@@ -265,6 +276,7 @@ declare namespace App {
         search: string;
         switch: string;
         tip: string;
+        trigger: string;
         update: string;
         updateSuccess: string;
         userCenter: string;
@@ -273,9 +285,20 @@ declare namespace App {
           no: string;
         };
       };
+      request: {
+        logout: string;
+        logoutMsg: string;
+        logoutWithModal: string;
+        logoutWithModalMsg: string;
+        refreshToken: string;
+        tokenExpired: string;
+      };
       theme: {
         themeSchema: { title: string } & Record<UnionKey.ThemeScheme, string>;
+        grayscale: string;
         layoutMode: { title: string } & Record<UnionKey.ThemeLayoutMode, string>;
+        recommendColor: string;
+        recommendColorDesc: string;
         themeColor: {
           title: string;
           followPrimary: string;
@@ -328,12 +351,10 @@ declare namespace App {
           common: {
             loginOrRegister: string;
             userNamePlaceholder: string;
-            accountPlaceholder: string;
             phonePlaceholder: string;
             codePlaceholder: string;
             passwordPlaceholder: string;
             confirmPasswordPlaceholder: string;
-            diffPwd: string;
             codeLogin: string;
             confirm: string;
             back: string;
@@ -355,6 +376,8 @@ declare namespace App {
           codeLogin: {
             title: string;
             getCode: string;
+            reGetCode: string;
+            sendCodeSuccess: string;
             imageCodePlaceholder: string;
           };
           register: {
@@ -362,15 +385,11 @@ declare namespace App {
             agreement: string;
             protocol: string;
             policy: string;
-            policyPlaceholder: string;
           };
           resetPwd: {
             title: string;
           };
           bindWeChat: {
-            title: string;
-          };
-          qrSign: {
             title: string;
           };
         };
@@ -414,6 +433,45 @@ declare namespace App {
           };
           creativity: string;
         };
+        function: {
+          tab: {
+            tabOperate: {
+              title: string;
+              addTab: string;
+              addTabDesc: string;
+              closeTab: string;
+              closeCurrentTab: string;
+              closeAboutTab: string;
+              addMultiTab: string;
+              addMultiTabDesc1: string;
+              addMultiTabDesc2: string;
+            };
+            tabTitle: {
+              title: string;
+              changeTitle: string;
+              change: string;
+              resetTitle: string;
+              reset: string;
+            };
+          };
+          multiTab: {
+            routeParam: string;
+            backTab: string;
+          };
+          toggleAuth: {
+            toggleAccount: string;
+            authHook: string;
+            superAdminVisible: string;
+            adminVisible: string;
+            adminOrUserVisible: string;
+          };
+          request: {
+            repeatedErrorOccurOnce: string;
+            repeatedError: string;
+            repeatedErrorMsg1: string;
+            repeatedErrorMsg2: string;
+          };
+        };
         manage: {
           common: {
             status: {
@@ -435,6 +493,8 @@ declare namespace App {
             };
             addRole: string;
             editRole: string;
+            menuAuth: string;
+            buttonAuth: string;
           };
           user: {
             title: string;
@@ -462,34 +522,43 @@ declare namespace App {
             };
           };
           menu: {
+            home: string;
             title: string;
+            id: string;
+            parentId: string;
             menuType: string;
             menuName: string;
             routeName: string;
             routePath: string;
-            page: string;
+            pathParam: string;
             layout: string;
+            page: string;
             i18nKey: string;
             icon: string;
             localIcon: string;
+            iconTypeTitle: string;
             order: string;
+            constant: string;
             keepAlive: string;
             href: string;
             hideInMenu: string;
             activeMenu: string;
             multiTab: string;
             fixedIndexInTab: string;
+            query: string;
             button: string;
             buttonCode: string;
             buttonDesc: string;
             menuStatus: string;
             form: {
+              home: string;
               menuType: string;
               menuName: string;
               routeName: string;
               routePath: string;
-              page: string;
+              pathParam: string;
               layout: string;
+              page: string;
               i18nKey: string;
               icon: string;
               localIcon: string;
@@ -501,6 +570,8 @@ declare namespace App {
               multiTab: string;
               fixedInTab: string;
               fixedIndexInTab: string;
+              queryKey: string;
+              queryValue: string;
               button: string;
               buttonCode: string;
               buttonDesc: string;
@@ -512,7 +583,10 @@ declare namespace App {
             type: {
               directory: string;
               menu: string;
-              function: string;
+            };
+            iconType: {
+              iconify: string;
+              local: string;
             };
           };
         };
@@ -520,9 +594,9 @@ declare namespace App {
       form: {
         required: string;
         userName: FormMsg;
-        account: FormMsg;
         phone: FormMsg;
         pwd: FormMsg;
+        confirmPwd: FormMsg;
         code: FormMsg;
         email: FormMsg;
       };
@@ -538,6 +612,9 @@ declare namespace App {
         expand: string;
         pin: string;
         unpin: string;
+      };
+      datatable: {
+        itemCount: string;
       };
     };
 
@@ -593,9 +670,9 @@ declare namespace App {
     /** The backend service response data */
     type Response<T = unknown> = {
       /** The backend service response code */
-      code: number;
+      code: string;
       /** The backend service response message */
-      msg?: string;
+      msg: string;
       /** The backend service response data */
       data: T;
     };

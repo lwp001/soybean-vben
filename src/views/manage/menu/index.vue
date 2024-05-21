@@ -1,36 +1,25 @@
 <script setup lang="tsx">
 import { ref } from 'vue';
+import type { Ref } from 'vue';
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { useBoolean } from '@sa/hooks';
-import { fetchGetMenuList } from '@/service/api';
+import { fetchGetAllPages, fetchGetMenuList } from '@/service/api';
 import { useAppStore } from '@/store/modules/app';
-import { useTable } from '@/hooks/common/table';
+import { useTable, useTableOperate } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import { yesOrNoRecord } from '@/constants/common';
 import { enableStatusRecord, menuTypeRecord } from '@/constants/business';
 import SvgIcon from '@/components/custom/svg-icon.vue';
-import type { Menu, MenuType } from '@/service/models/index';
-import MenuOperateDrawer, { type OperateType } from './modules/menu-operate-drawer.vue';
+import MenuOperateModal, { type OperateType } from './modules/menu-operate-modal.vue';
 
 const appStore = useAppStore();
-const { bool: drawerVisible, setTrue: openDrawer } = useBoolean();
 
-const { columns, filteredColumns, data, loading, pagination, getData } = useTable<
-  Menu,
-  typeof fetchGetMenuList,
-  'index' | 'operate'
->({
+const { bool: visible, setTrue: openModal } = useBoolean();
+
+const wrapperRef = ref<HTMLElement | null>(null);
+
+const { columns, columnChecks, data, loading, pagination, getData } = useTable({
   apiFn: fetchGetMenuList,
-  transformer: res => {
-    const menus = res.data || [];
-
-    return {
-      data: menus,
-      pageNum: 1,
-      pageSize: 10,
-      total: menus.length
-    };
-  },
   columns: () => [
     {
       type: 'selection',
@@ -38,24 +27,19 @@ const { columns, filteredColumns, data, loading, pagination, getData } = useTabl
       width: 48
     },
     {
-      key: 'index',
-      title: $t('common.index'),
-      width: 120,
-      render: (_, index) => {
-        return <span>{getIndex(index)}</span>;
-      },
+      key: 'id',
+      title: $t('page.manage.menu.id'),
       align: 'center'
     },
     {
       key: 'menuType',
       title: $t('page.manage.menu.menuType'),
       align: 'center',
-      width: 120,
+      width: 80,
       render: row => {
-        const tagMap: Record<MenuType, NaiveUI.ThemeColor> = {
-          M: 'default',
-          C: 'primary',
-          F: 'warning'
+        const tagMap: Record<Api.Common.EnableStatus, NaiveUI.ThemeColor> = {
+          1: 'default',
+          2: 'primary'
         };
 
         const label = $t(menuTypeRecord[row.menuType]);
@@ -64,14 +48,14 @@ const { columns, filteredColumns, data, loading, pagination, getData } = useTabl
       }
     },
     {
-      key: 'name',
+      key: 'menuName',
       title: $t('page.manage.menu.menuName'),
       align: 'center',
       minWidth: 120,
       render: row => {
-        const { i18nKey, name } = row;
+        const { i18nKey, menuName } = row;
 
-        const label = i18nKey ? $t(i18nKey) : name;
+        const label = i18nKey ? $t(i18nKey) : menuName;
 
         return <span>{label}</span>;
       }
@@ -82,9 +66,9 @@ const { columns, filteredColumns, data, loading, pagination, getData } = useTabl
       align: 'center',
       width: 60,
       render: row => {
-        const icon = !row.icon?.startsWith('local') ? row.icon : undefined;
+        const icon = row.iconType === '1' ? row.icon : undefined;
 
-        const localIcon = row.icon?.startsWith('local') ? row.icon : undefined;
+        const localIcon = row.iconType === '2' ? row.icon : undefined;
 
         return (
           <div class="flex-center">
@@ -100,7 +84,7 @@ const { columns, filteredColumns, data, loading, pagination, getData } = useTabl
       minWidth: 120
     },
     {
-      key: 'component',
+      key: 'routePath',
       title: $t('page.manage.menu.routePath'),
       align: 'center',
       minWidth: 120
@@ -109,7 +93,7 @@ const { columns, filteredColumns, data, loading, pagination, getData } = useTabl
       key: 'status',
       title: $t('page.manage.menu.menuStatus'),
       align: 'center',
-      width: 120,
+      width: 80,
       render: row => {
         if (row.status === null) {
           return null;
@@ -129,7 +113,7 @@ const { columns, filteredColumns, data, loading, pagination, getData } = useTabl
       key: 'hideInMenu',
       title: $t('page.manage.menu.hideInMenu'),
       align: 'center',
-      width: 100,
+      width: 80,
       render: row => {
         const hide: CommonType.YesOrNo = row.hideInMenu ? 'Y' : 'N';
 
@@ -144,10 +128,16 @@ const { columns, filteredColumns, data, loading, pagination, getData } = useTabl
       }
     },
     {
+      key: 'parentId',
+      title: $t('page.manage.menu.parentId'),
+      width: 90,
+      align: 'center'
+    },
+    {
       key: 'order',
       title: $t('page.manage.menu.order'),
       align: 'center',
-      width: 80
+      width: 60
     },
     {
       key: 'operate',
@@ -156,12 +146,12 @@ const { columns, filteredColumns, data, loading, pagination, getData } = useTabl
       width: 230,
       render: row => (
         <div class="flex-center justify-end gap-8px">
-          {row.menuType === 'M' && (
-            <NButton type="primary" ghost size="small" onClick={() => handleAddChildMenu(row.id)}>
+          {row.menuType === '1' && (
+            <NButton type="primary" ghost size="small" onClick={() => handleAddChildMenu(row)}>
               {$t('page.manage.menu.addChildMenu')}
             </NButton>
           )}
-          <NButton type="primary" ghost size="small" onClick={() => handleEdit(row.id)}>
+          <NButton type="primary" ghost size="small" onClick={() => handleEdit(row)}>
             {$t('common.edit')}
           </NButton>
           <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
@@ -180,61 +170,68 @@ const { columns, filteredColumns, data, loading, pagination, getData } = useTabl
   ]
 });
 
+const { checkedRowKeys, onBatchDeleted, onDeleted } = useTableOperate(data, getData);
+
 const operateType = ref<OperateType>('add');
 
 function handleAdd() {
   operateType.value = 'add';
-  openDrawer();
+  openModal();
 }
-
-const checkedRowKeys = ref<string[]>([]);
 
 async function handleBatchDelete() {
   // request
   console.log(checkedRowKeys.value);
-  window.$message?.success($t('common.deleteSuccess'));
 
-  checkedRowKeys.value = [];
-
-  getData();
+  onBatchDeleted();
 }
 
-function handleAddChildMenu(id: number) {
-  console.log('id: ', id);
-  operateType.value = 'add';
-  openDrawer();
-}
-
-/** the editing row data */
-const editingData = ref<Menu | null>(null);
-
-function handleEdit(id: number) {
-  operateType.value = 'edit';
-  editingData.value = data.value.find(item => item.id === id) || null;
-  openDrawer();
-}
-
-async function handleDelete(id: number) {
+function handleDelete(id: number) {
   // request
   console.log(id);
-  window.$message?.success($t('common.deleteSuccess'));
 
-  getData();
+  onDeleted();
 }
 
-function getIndex(index: number) {
-  const { page = 0, pageSize = 10 } = pagination;
+/** the edit menu data or the parent menu data when adding a child menu */
+const editingData: Ref<Api.SystemManage.Menu | null> = ref(null);
 
-  return String((page - 1) * pageSize + index + 1);
+function handleEdit(item: Api.SystemManage.Menu) {
+  operateType.value = 'edit';
+  editingData.value = { ...item };
+
+  openModal();
 }
+
+function handleAddChildMenu(item: Api.SystemManage.Menu) {
+  operateType.value = 'addChild';
+
+  editingData.value = { ...item };
+
+  openModal();
+}
+
+const allPages = ref<string[]>([]);
+
+async function getAllPages() {
+  const { data: pages } = await fetchGetAllPages();
+  allPages.value = pages || [];
+}
+
+function init() {
+  getAllPages();
+}
+
+// init
+init();
 </script>
 
 <template>
-  <div class="flex-vertical-stretch gap-16px overflow-hidden <sm:overflow-auto">
+  <div ref="wrapperRef" class="flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
     <NCard :title="$t('page.manage.menu.title')" :bordered="false" size="small" class="sm:flex-1-hidden card-wrapper">
       <template #header-extra>
         <TableHeaderOperation
-          v-model:columns="filteredColumns"
+          v-model:columns="columnChecks"
           :disabled-delete="checkedRowKeys.length === 0"
           :loading="loading"
           @add="handleAdd"
@@ -248,16 +245,18 @@ function getIndex(index: number) {
         :data="data"
         size="small"
         :flex-height="!appStore.isMobile"
-        :scroll-x="640"
+        :scroll-x="1088"
         :loading="loading"
+        :row-key="row => row.id"
+        remote
         :pagination="pagination"
-        :row-key="item => item.id"
         class="sm:h-full"
       />
-      <MenuOperateDrawer
-        v-model:visible="drawerVisible"
+      <MenuOperateModal
+        v-model:visible="visible"
         :operate-type="operateType"
         :row-data="editingData"
+        :all-pages="allPages"
         @submitted="getData"
       />
     </NCard>

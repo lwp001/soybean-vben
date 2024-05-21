@@ -1,12 +1,13 @@
-import { createMemoryHistory, createRouter, createWebHashHistory, createWebHistory } from 'vue-router';
-import type { RouteRecordRaw, RouterHistory } from 'vue-router';
 import type { App } from 'vue';
-import { setupRouterGuard } from './guard';
+import type { RouteRecordRaw, RouterHistory } from 'vue-router';
+import { createMemoryHistory, createRouter, createWebHashHistory, createWebHistory } from 'vue-router';
+import { basicRoutes } from './routes/builtin';
+import { createRouterGuard } from './guard';
 
-import { basicRoutes } from './routes';
+const { VITE_ROUTER_HISTORY_MODE = 'history', VITE_BASE_URL } = import.meta.env;
 
 // 白名单应该包含基本静态路由
-const WHITE_NAME_LIST: string[] = [];
+export const WHITE_NAME_LIST: string[] = [];
 const getRouteNames = (array: any[]) =>
   array.forEach(item => {
     WHITE_NAME_LIST.push(item.name);
@@ -14,28 +15,25 @@ const getRouteNames = (array: any[]) =>
   });
 getRouteNames(basicRoutes);
 
-const { VITE_ROUTER_HISTORY_MODE = 'history', VITE_BASE_URL } = import.meta.env;
-
 const historyCreatorMap: Record<Env.RouterHistoryMode, (base?: string) => RouterHistory> = {
   hash: createWebHashHistory,
   history: createWebHistory,
   memory: createMemoryHistory
 };
 
-// app router
-// 创建一个可以被 Vue 应用程序使用的路由实例
 export const router = createRouter({
-  // 创建一个 hash 历史记录。
   history: historyCreatorMap[VITE_ROUTER_HISTORY_MODE](VITE_BASE_URL),
-  // history: createWebHashHistory(VITE_BASE_URL),
-  // 应该添加到路由的初始路由列表。
-  routes: basicRoutes as unknown as RouteRecordRaw[],
-  // 是否应该禁止尾部斜杠。默认为假
-  strict: true,
-  scrollBehavior: () => ({ left: 0, top: 0 })
+  routes: basicRoutes as RouteRecordRaw[]
 });
 
-// reset router
+/** Setup Vue Router */
+export async function setupRouter(app: App) {
+  app.use(router);
+  createRouterGuard(router);
+  await router.isReady();
+}
+
+/** 重置路由 reset router */
 export function resetRouter() {
   router.getRoutes().forEach(route => {
     const { name } = route;
@@ -43,12 +41,4 @@ export function resetRouter() {
       router.hasRoute(name) && router.removeRoute(name);
     }
   });
-}
-
-// config router
-// 配置路由器
-export async function setupRouter(app: App<Element>) {
-  app.use(router);
-  setupRouterGuard(router);
-  await router.isReady();
 }

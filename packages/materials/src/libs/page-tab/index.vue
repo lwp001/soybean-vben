@@ -25,31 +25,6 @@ interface Emits {
 
 const emit = defineEmits<Emits>();
 
-type SlotFn = (props?: Record<string, unknown>) => any;
-
-type Slots = {
-  /**
-   * Slot
-   *
-   * The center content of the tab
-   */
-  default?: SlotFn;
-  /**
-   * Slot
-   *
-   * The left content of the tab
-   */
-  prefix?: SlotFn;
-  /**
-   * Slot
-   *
-   * The right content of the tab
-   */
-  suffix?: SlotFn;
-};
-
-defineSlots<Slots>();
-
 const activeTabComponent = computed(() => {
   const { mode, chromeClass, buttonClass } = props;
 
@@ -78,18 +53,30 @@ const bindProps = computed(() => {
 function handleClose() {
   emit('close');
 }
+
+function handleMouseup(e: MouseEvent) {
+  // close tab by mouse wheel button click
+  if (e.button === 1) {
+    handleClose();
+  }
+}
 </script>
 
 <template>
-  <component :is="activeTabComponent.component" :class="activeTabComponent.class" :style="cssVars" v-bind="bindProps">
+  <component
+    :is="activeTabComponent.component"
+    :class="activeTabComponent.class"
+    :style="cssVars"
+    v-bind="bindProps"
+    @mouseup="handleMouseup"
+  >
     <template #prefix>
       <slot name="prefix"></slot>
     </template>
     <slot></slot>
     <template #suffix>
       <slot name="suffix">
-        <!-- <SvgIconClose v-if="closable" :class="[style['icon_close']]" @click="handleClose" /> -->
-        <SvgClose v-if="closable" :class="[style['svg-close']]" @click="handleClose" />
+        <SvgClose v-if="closable" :class="[style['svg-close']]" @click.stop="handleClose" />
       </slot>
     </template>
   </component>

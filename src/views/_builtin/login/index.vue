@@ -1,158 +1,76 @@
 <script setup lang="ts">
-import { computed, unref } from 'vue';
-import { NH2 } from 'naive-ui';
+import { computed, ref } from 'vue';
+
+import { getPaletteColorByNumber, mixColor } from '@sa/color';
 import { $t } from '@/locales';
+import { useAppStore } from '@/store/modules/app';
 import { useThemeStore } from '@/store/modules/theme';
-import { LoginStateEnum, useLoginState } from './components/use-login';
+import { moduleMap } from './data';
 
-import PwdLogin from './components/pwd-login.vue';
-import CodeLogin from './components/code-login.vue';
-import RegisterForm from './components/register.vue';
-// import ResetPwd from './components/reset-pwd.vue';
+import PwdLogin from './modules/pwd-login.vue';
+import CodeLogin from './modules/code-login.vue';
+import Register from './modules/register.vue';
+import ResetPwd from './modules/reset-pwd.vue';
+import BindWechat from './modules/bind-wechat.vue';
 
+const appStore = useAppStore();
 const themeStore = useThemeStore();
-const title = '测试管理系统';
 
-const { getLoginState } = useLoginState();
+const activeModule = ref('pwd-login');
 
-const formTitle = computed(() => {
-  const titleMap = {
-    [LoginStateEnum.RESET_PASSWORD]: $t('page.login.resetPwd.title'),
-    [LoginStateEnum.LOGIN]: $t('page.login.pwdLogin.title'),
-    [LoginStateEnum.REGISTER]: $t('page.login.register.title'),
-    [LoginStateEnum.MOBILE]: $t('page.login.codeLogin.title'),
-    [LoginStateEnum.QR_CODE]: $t('page.login.qrSign.title')
-  };
-  return titleMap[unref(getLoginState)];
+const bgThemeColor = computed(() =>
+  themeStore.darkMode ? getPaletteColorByNumber(themeStore.themeColor, 600) : themeStore.themeColor
+);
+
+const bgColor = computed(() => {
+  const COLOR_WHITE = '#ffffff';
+
+  const ratio = themeStore.darkMode ? 0.5 : 0.2;
+
+  return mixColor(COLOR_WHITE, themeStore.themeColor, ratio);
 });
+
+function toLogin() {
+  activeModule.value = 'pwd-login';
+}
 </script>
 
 <template>
-  <div class="login">
-    <div class="login_slogan hidden xl:flex z-100">
-      <div class="login_logo">
-        <img :title="title" :alt="title" src="@/assets/images/logo.png" />
-        <div class="truncate login_logo-title">
-          {{ title }}
-        </div>
+  <div class="relative size-full flex-center overflow-hidden" :style="{ backgroundColor: bgColor }">
+    <WaveBg :theme-color="bgThemeColor" />
+    <NCard :bordered="false" class="relative z-4 w-auto rd-12px">
+      <div class="w-400px lt-sm:w-300px">
+        <header class="flex-y-center justify-between">
+          <SystemLogo class="text-64px text-primary lt-sm:text-48px" />
+          <h3 class="text-28px text-primary font-500 lt-sm:text-22px">{{ $t('system.title') }}</h3>
+          <div class="i-flex-col">
+            <ThemeSchemaSwitch
+              :theme-schema="themeStore.themeScheme"
+              :show-tooltip="false"
+              class="text-20px lt-sm:text-18px"
+              @switch="themeStore.toggleThemeScheme"
+            />
+            <LangSwitch
+              :lang="appStore.locale"
+              :lang-options="appStore.localeOptions"
+              :show-tooltip="false"
+              @change-lang="appStore.changeLocale"
+            />
+          </div>
+        </header>
+        <main class="pt-24px">
+          <h3 class="text-18px text-primary font-medium">{{ $t(moduleMap[activeModule]) }}</h3>
+          <div class="pt-24px">
+            <PwdLogin v-if="activeModule === 'pwd-login'" @change-login-compent="val => (activeModule = val)" />
+            <CodeLogin v-if="activeModule === 'code-login'" @to-login="toLogin" />
+            <Register v-if="activeModule === 'register'" @to-login="toLogin" />
+            <ResetPwd v-if="activeModule === 'reset-pwd'" @to-login="toLogin" />
+            <BindWechat v-if="activeModule === 'bind-wechat'" @to-login="toLogin" />
+          </div>
+        </main>
       </div>
-
-      <div class="my-auto">
-        <img :alt="title" src="@/assets/svg/login-box-bg.svg" class="w-2/3 -enter-x" />
-        <div class="mt-10 font-medium text-white -enter-x">
-          <span class="inline-block mt-4 text-2xl">
-            {{ $t('system.title') }}
-          </span>
-        </div>
-        <div class="mt-4 font-normal text-white text-md -enter-x">
-          {{ $t('system.Description') }}
-        </div>
-      </div>
-    </div>
-    <div class="enter-x login_form">
-      <div class="absolute mt-4 right-4">
-        <ThemeSchemaSwitch
-          :theme-schema="themeStore.themeScheme"
-          :show-tooltip="false"
-          class="text-20px <sm:text-18px"
-          @switch="themeStore.toggleThemeScheme"
-        />
-      </div>
-      <div class="sm:w-4/6 xl:w-4/5 w-full mx-auto my-auto p-4 rounded-md shadow-md xl:shadow-none b-2 z-10001">
-        <div class="py-5 px-4 b-1 rounded-5">
-          <NH2 class="mb-3 text-2xl font-bold text-center xl:text-3xl enter-x xl:text-left">
-            {{ formTitle }}
-          </NH2>
-          <PwdLogin />
-          <RegisterForm />
-          <CodeLogin />
-          <!-- <ForgetPasswordForm />   <QrCodeForm /> -->
-        </div>
-      </div>
-    </div>
+    </NCard>
   </div>
 </template>
 
-<style lang="scss">
-html[class='light dark'] {
-  .login {
-    background-color: #293146;
-    &::before {
-      background-image: url(@/assets/svg/login-bg-dark.svg);
-    }
-  }
-}
-
-.login {
-  height: 100%;
-  width: 100%;
-  min-height: 100%;
-  display: flex;
-  background-color: #fff;
-
-  &_slogan {
-    min-height: 100%;
-    padding-left: 50px;
-    margin-right: 40px;
-    flex-direction: column;
-  }
-
-  &_slogan,
-  &_form {
-    flex: 1;
-  }
-
-  &_form {
-    display: flex;
-  }
-
-  &::before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    margin-left: -48%;
-    background-image: url(@/assets/svg/login-bg.svg);
-    background-position: 100%;
-    background-repeat: no-repeat;
-    background-size: auto 100%;
-    content: '';
-  }
-
-  &_logo {
-    display: flex;
-    align-items: center;
-    padding-left: 7px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: absolute;
-    top: 12px;
-    height: 80px;
-    &-title {
-      font-size: 24px;
-      color: #fff;
-      margin-left: 8px;
-    }
-    img {
-      width: 48px;
-    }
-  }
-
-  .sign-in-way {
-    .anticon {
-      font-size: 22px;
-      color: #888;
-      cursor: pointer;
-
-      &:hover {
-        color: var(--primary-color);
-      }
-    }
-  }
-
-  .count-down-input input {
-    min-width: unset;
-  }
-}
-</style>
+<style scoped></style>

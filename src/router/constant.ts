@@ -1,19 +1,16 @@
-// import type { RouteComponent } from 'vue-router';
+export const REDIRECT_NAME = 'redirect';
+export const ROOT_NAME = 'root';
 
-// import BaseLayout from '@/layouts/base-layout/index.vue';
-// import BlankLayout from '@/layouts/blank-layout/index.vue';
-
-export const REDIRECT_NAME = 'Redirect';
-
-export const PARENT_LAYOUT_NAME = 'ParentLayout';
+export const PARENT_LAYOUT_NAME = 'parent-layout';
 
 export const PAGE_NOT_FOUND_NAME = 'not-found';
-export const LOGIN_PATH = '/login';
-export const LOGIN_ROUTER_NAME = 'login';
 
 export const EXCEPTION_COMPONENT = () => import('@/components/common/exception-base.vue');
+
+/** @description: default layout */
 export const BaseLayout = () => import('@/layouts/base-layout/index.vue');
 export const BlankLayout = () => import('@/layouts/blank-layout/index.vue');
+export const IFRAME = () => import('@/views/_builtin/iframe-page/[url].vue');
 
 /** @description: parent-layout */
 export const getParentLayout = (_name?: string) => {
@@ -24,8 +21,3 @@ export const getParentLayout = (_name?: string) => {
       });
     });
 };
-
-// export const layouts: Record<RouteLayout, RouteComponent | (() => Promise<RouteComponent>)> = {
-//   base: BaseLayout,
-//   blank: BlankLayout
-// };

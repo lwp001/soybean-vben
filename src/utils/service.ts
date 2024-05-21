@@ -11,7 +11,7 @@ export function createServiceConfig(env: Env.ImportMeta) {
     other = JSON.parse(VITE_OTHER_SERVICE_BASE_URL);
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('VITE_OTHER_SERVICE_BASE_URL is not a valid JSON string', VITE_OTHER_SERVICE_BASE_URL);
+    console.error('VITE_OTHER_SERVICE_BASE_URL is not a valid JSON string');
   }
 
   const httpConfig: App.Service.SimpleServiceConfig = {

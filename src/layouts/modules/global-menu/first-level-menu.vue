@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { createReusableTemplate } from '@vueuse/core';
 import { SimpleScrollbar } from '@sa/materials';
-import { transformColorWithOpacity } from '@sa/utils';
+import { transformColorWithOpacity } from '@sa/color';
 import { useAppStore } from '@/store/modules/app';
 import { useRouteStore } from '@/store/modules/route';
 import { useThemeStore } from '@/store/modules/theme';
@@ -58,7 +58,7 @@ function handleClickMixMenu(menu: App.Global.Menu) {
   <!-- define component: MixMenuItem -->
   <DefineMixMenuItem v-slot="{ label, icon, active, isMini }">
     <div
-      class="mx-4px mb-6px flex-vertical-center cursor-pointer rounded-8px bg-transparent px-4px py-8px transition-300 hover:bg-[rgb(0,0,0,0.08)]"
+      class="mx-4px mb-6px flex-col-center cursor-pointer rounded-8px bg-transparent px-4px py-8px transition-300 hover:bg-[rgb(0,0,0,0.08)]"
       :class="{
         'text-primary selected-mix-menu': active,
         'text-white:65 hover:text-white': inverted,
@@ -74,9 +74,9 @@ function handleClickMixMenu(menu: App.Global.Menu) {
       </p>
     </div>
   </DefineMixMenuItem>
+  <!-- define component end: MixMenuItem -->
 
-  <!-- template -->
-  <div class="h-full flex-vertical-stretch flex-1-hidden">
+  <div class="h-full flex-col-stretch flex-1-hidden">
     <slot></slot>
     <SimpleScrollbar>
       <MixMenuItem
@@ -92,6 +92,7 @@ function handleClickMixMenu(menu: App.Global.Menu) {
     <MenuToggler
       arrow-icon
       :collapsed="appStore.siderCollapse"
+      :z-index="99"
       :class="{ 'text-white:88 !hover:text-white': inverted }"
       @click="appStore.toggleSiderCollapse"
     />

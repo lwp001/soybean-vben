@@ -4,7 +4,7 @@ import { BaseLayout } from '@/router/constant';
 
 const about: RouteRecordItem = {
   path: '/about',
-  name: 'about_1',
+  name: 'about',
   component: BaseLayout,
   redirect: '/about',
   meta: {

@@ -2,33 +2,21 @@ import type { RouteRecordItem } from '@/router/types';
 import { BaseLayout } from '@/router/constant';
 
 const manage: RouteRecordItem = {
-  path: '/manage',
   name: 'manage',
+  path: '/manage',
   component: BaseLayout,
-  redirect: '/dashboard/analysis',
+  redirect: '/manage/user',
   meta: {
-    order: 9,
+    title: 'manage',
     i18nKey: 'route.manage',
     icon: 'carbon:cloud-service-management',
-    title: 'manage'
-    // roles: ['R_ADMIN']
+    order: 9,
+    roles: ['R_ADMIN']
   },
   children: [
     {
-      path: '/manage/role',
-      name: 'manage_role',
-      component: () => import('@/views/manage/role/index.vue'),
-
-      meta: {
-        title: 'manage_role',
-        i18nKey: 'route.manage_role',
-        icon: 'carbon:user-role',
-        order: 2
-      }
-    },
-    {
-      path: 'manage_menu',
-      name: '/manage/menu',
+      name: 'manage_menu',
+      path: '/manage/menu',
       component: () => import('@/views/manage/menu/index.vue'),
       meta: {
         title: 'manage_menu',
@@ -37,6 +25,18 @@ const manage: RouteRecordItem = {
         order: 3,
         roles: ['R_ADMIN'],
         keepAlive: true
+      }
+    },
+    {
+      name: 'manage_role',
+      path: '/manage/role',
+      component: () => import('@/views/manage/role/index.vue'),
+      meta: {
+        title: 'manage_role',
+        i18nKey: 'route.manage_role',
+        icon: 'carbon:user-role',
+        order: 2,
+        roles: ['R_SUPER']
       }
     },
     {
@@ -55,11 +55,10 @@ const manage: RouteRecordItem = {
       name: 'manage_user-detail',
       path: '/manage/user-detail/:id',
       component: () => import('@/views/manage/user-detail/[id].vue'),
-      props: true,
       meta: {
         title: 'manage_user-detail',
         i18nKey: 'route.manage_user-detail',
-        hideMenu: true,
+        hideInMenu: true,
         roles: ['R_ADMIN'],
         activeMenu: 'manage_user'
       }
